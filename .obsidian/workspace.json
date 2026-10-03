@@ -1,0 +1,242 @@
+{
+  "main": {
+    "id": "5e5769584edd923b",
+    "type": "split",
+    "children": [
+      {
+        "id": "911f32df1e6c90d8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ad36e75f4b889d81",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "2 - Source Materials/Books/Design Data-Intensive Application/1.2 - Trade Off In Data Systems Architecture.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "1.2 - Trade Off In Data Systems Architecture"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d2b838d461179e6f",
+    "type": "split",
+    "children": [
+      {
+        "id": "0051dd0465059487",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "86eacf32835d3e8e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "8ba8d5059e97ae14",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "file: subagent",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "d67749d395bcbcaf",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          },
+          {
+            "id": "6f472046dd77f121",
+            "type": "leaf",
+            "state": {
+              "type": "journal-calendar",
+              "state": {},
+              "icon": "calendar-days",
+              "title": "Calendar"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 336.5,
+    "collapsed": true
+  },
+  "right": {
+    "id": "accb76d41053fec8",
+    "type": "split",
+    "children": [
+      {
+        "id": "b671dd1af80a1443",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "35b95ae6132527df",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "2 - Source Materials/Course/LF - Intro to Kubernetes/10 - Services.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": true,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 10 - Services"
+            }
+          },
+          {
+            "id": "df6b7f131a3222cd",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "5 - Templates/Raw Note.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Raw Note"
+            }
+          },
+          {
+            "id": "16da32b079bae51d",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "50e8d86a3e111be0",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "2 - Source Materials/Course/设计模式之美/12 - Inversion of Control (IOC) and Dependency Injection (DI).md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 12 - Inversion of Control (IOC) and Dependency Injection (DI)"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "ad36e75f4b889d81",
+  "lastOpenFiles": [
+    "6 - Full Notes/Encapsulation.md",
+    "6 - Full Notes/Anemic vs Rich Domain Models.md",
+    "6 - Full Notes/Interfaces vs Abstract Classes.md",
+    "6 - Full Notes/Cohesion and Coupling.md",
+    "6 - Full Notes/Law of Demeter.md",
+    "6 - Full Notes/DRY Principle.md",
+    "6 - Full Notes/YAGNI Principle.md",
+    "6 - Full Notes/KISS Principle.md",
+    "6 - Full Notes/Inversion of Control.md",
+    "6 - Full Notes/Dependency Inversion Principle.md",
+    "6 - Full Notes/Dependency Injection.md",
+    "Attachments/Pasted image 20261003132828.png",
+    "6 - Full Notes/Interface Segregation Principle.md",
+    "6 - Full Notes/Liskov Substitution Principle.md",
+    "6 - Full Notes/Open Closed Principle.md",
+    "6 - Full Notes/Single Responsibility Principle.md",
+    "6 - Full Notes/Concurrency vs Parallelism.md",
+    "6 - Full Notes/Composition over Inheritance.md",
+    "2 - Source Materials/Books/Design Data-Intensive Application/1.2 - Trade Off In Data Systems Architecture.md",
+    "Attachments/Pasted image 20260426094231.png",
+    "Attachments/Pasted image 20260425104742.png",
+    "Attachments/Pasted image 20260425103928.png",
+    "Attachments/Pasted image 20260425093336.png",
+    "Attachments/Pasted image 20260412121929.png",
+    "Attachments/Pasted image 20260412120739.png",
+    "Attachments/Pasted image 20260412115458.png",
+    "Attachments/Pasted image 20260412111221.png",
+    "Attachments/Pasted image 20260412105854.png",
+    "Attachments",
+    "AGENTS.md",
+    "2 - Source Materials/Books/Design Data-Intensive Application/1 - Reliable, Scalable, and Maintainable Applications.md",
+    "2 - Source Materials/Course/设计模式之美/12 - Inversion of Control (IOC) and Dependency Injection (DI).md",
+    "2 - Source Materials/Course/设计模式之美/15 - LOD for High Cohesive, Loose Coupling.md",
+    "2 - Source Materials/Course/设计模式之美/11 - Interface Segregation Principle (ISP).md",
+    "2 - Source Materials/Course/设计模式之美/10 - LSP, Liskov Substitution Principle.md",
+    "2 - Source Materials/Course/设计模式之美/14 - DRY.md",
+    "2 - Source Materials/Course/设计模式之美/13 - KISS and YAGNI Principle.md",
+    "2 - Source Materials/Course/设计模式之美",
+    "2 - Source Materials/Course/AI原生开发工作流实战",
+    "2 - Source Materials/Books/Design Data-Intensive Application",
+    "2 - Source Materials/Course/Get Started with Redis",
+    "2 - Source Materials/Course/Claude Code in Action",
+    "2 - Source Materials/Course/LF - Intro to Kubernetes",
+    "2 - Source Materials/Course/Clickhouse Level 2",
+    "2 - Source Materials/Course/Clickhouse Level I",
+    "2 - Source Materials/Articles"
+  ]
+}
