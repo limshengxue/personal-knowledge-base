@@ -70,6 +70,14 @@ Examples include:
 
 Use them when I want to explore a domain rather than look up one specific concept.
 
+The preferred navigation path is:
+
+```text
+Index -> Tag -> Full Notes
+```
+
+Indexes guide me to the right topic area. Mature Tag pages then organize the canonical Full Notes inside that topic.
+
 ### 5 - Templates
 
 Templates provide starting structures for new notes.

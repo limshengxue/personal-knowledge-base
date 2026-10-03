@@ -193,6 +193,14 @@ Prefer notes that:
 
 ## Tags
 
+The preferred navigation hierarchy is:
+
+```text
+Index -> Tag -> Full Notes
+```
+
+Indexes should guide navigation into Tags. Mature Tags act as curated topic maps that expose relevant Full Notes. Do not make Indexes bypass the Tag layer by turning them into direct catalogs of Full Notes.
+
 Tag files can exist in two states.
 
 ### Lightweight Tag
@@ -224,7 +232,9 @@ Each Index should help a person quickly understand:
 
 Prefer grouped semantic sections over flat lists when a domain grows.
 
-Update an Index when a new topic materially changes navigation. Do not update it for every small note.
+Update an Index when a new Tag or domain grouping materially changes navigation. Do not update it for every Full Note.
+
+Prefer Index links to `3 - Tags/` topic nodes rather than direct links to individual Full Notes.
 
 ## Query Workflow
 
@@ -317,7 +327,9 @@ Validate edits in Obsidian: check heading structure, wikilinks, image embeds, an
 
 Use descriptive filenames matching the note topic; preserve existing capitalization and multilingual titles.
 
-- Use `[[Topic]]` for internal links.
+- Use `[[Topic]]` for ordinary concept-to-concept links.
+- In a Full Note's `Tags:` line, use explicit Tag paths in the form `[[3 - Tags/tag name|tag name]]` so Tags cannot be confused with Full Notes of similar names.
+- When an existing Full Note is edited for another reason, normalize its `Tags:` links to this explicit form. Do not bulk-rewrite untouched historical notes only for link style.
 - Use `![[filename.png]]` for image embeds.
 - Label code fences with their language when practical.
 - Keep nested-list indentation consistent with nearby notes.
