@@ -5,12 +5,23 @@
 This repository is an Obsidian knowledge vault containing Markdown notes and image attachments.
 
 - `1 - Journals/`: personal planning and `Weekly Journal/` entries.
-- `2 - Source Materials/`: notes organized under `Articles/`, `Books/`, `Course/`, and `Videos/`.
+- `2 - Source Materials/`: collected or ingested source material. Organize each item into the most appropriate existing subfolder, such as `Articles/`, `Books/`, `Course/`, `Videos/`, or `Social Media Posts/`.
 - `3 - Tags/`: topic notes used as wikilink targets, such as `airflow.md`.
 - `4 - Indexes/`: reserved for navigation and overview notes.
 - `5 - Templates/`: full-note, raw-note, and weekly-journal templates.
 - `6 - Full Notes/`: developed topic notes and the configured destination for new notes.
 - `.obsidian/`: application settings, plugins, themes, and workspace state. Root-level PNG files are embedded attachments.
+
+## Source Material Ingestion
+
+When the user asks to collect, ingest, save, archive, or add external material to the knowledge base:
+
+- Always place the resulting note under `2 - Source Materials/`.
+- Choose the most appropriate existing subfolder based on the source type or content.
+- Prefer an existing subfolder over creating a new one.
+- If no existing subfolder is a reasonable fit, ask the user whether a new subfolder should be created before creating it.
+- Preserve a useful source link and enough metadata or context to identify the original material.
+- Do not place ingested source material directly at the repository root or directly under `2 - Source Materials/` when a suitable subfolder exists.
 
 ## Development & Validation
 
