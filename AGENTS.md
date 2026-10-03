@@ -20,7 +20,7 @@ Each directory has a distinct role:
 - `2 - Source Materials/`: preserved external inputs. This answers: **What did the source say?**
 - `3 - Tags/`: topic nodes and lightweight maps connecting related Full Notes.
 - `4 - Indexes/`: high-level domain maps for navigating the knowledge base.
-- `5 - Templates/`: note templates.
+- `5 - Templates/`: note templates. `Raw Note.md` is the user's minimal manual template; `AI Raw Note.md` is the structured template for AI-assisted ingestion.
 - `6 - Full Notes/`: canonical synthesized knowledge. This answers: **What do I currently understand?**
 - `Attachments/`: images and other embedded assets.
 
@@ -93,7 +93,8 @@ When the user asks to collect, ingest, save, archive, or add external material:
 - Prefer an existing subfolder.
 - If no existing subfolder is a reasonable fit, ask whether a new one should be created.
 - Do not place source material directly at the repository root.
-- Follow `5 - Templates/Raw Note.md`.
+- For AI-assisted ingestion, follow `5 - Templates/AI Raw Note.md`.
+- Keep `5 - Templates/Raw Note.md` as the user's minimal manual raw-note template; do not overwrite or expand it to enforce AI ingestion structure.
 - Do not add YAML frontmatter unless the template is changed to use it.
 - Preserve the original source URL in `# References`.
 - Capture enough substance that the note remains useful without reopening the source.
