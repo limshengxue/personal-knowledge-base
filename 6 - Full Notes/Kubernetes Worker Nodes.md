@@ -11,7 +11,7 @@ Provide RTE for client applications which are containers
 
 ## Worker Node Components
 ### Container Runtime
-- Stay on the node to run the containers of pod, e.g. Docker Engine
+- Runs Pod containers through CRI-compatible runtimes such as containerd or CRI-O. Docker Engine requires an adapter such as cri-dockerd; it does not implement CRI directly.
 
 ### Node agent - kubelet
 - Agent running on each node (control plane and workers)
@@ -30,19 +30,19 @@ Provide RTE for client applications which are containers
 - CRI is an effort introduce to support more container runtime without the need to change kubelet's source code
 - Any container runtime implement CRI can be supported
 - Shims are CRI implementations, interfaces, or adapters, specific to each container runtime supported by k8s
-- cri-containerd - support containerd
+- containerd's CRI plugin provides Kubernetes integration
 - CRI-O - support Open Container Initiative (OCI) compatible runtime with k8s
-- dockershim and cri-dockerd (new)
+- Built-in dockershim was removed in Kubernetes 1.24. cri-dockerd is an external adapter for Docker Engine, not the built-in shim.
 
 ### Proxy - kube-proxy 
 - Network agent which runs on each node (control plane and workers)
 - Responsible for dynamic updates and maintenance of all networking rules
 - Abstract details of Pods networking and forwards connection requests to the containers in the Pods
-- Operates in conjunction with iptables of the node
+- Programs forwarding rules using a supported backend such as iptables or nftables. Some networking implementations replace kube-proxy; it is not mandatory in every cluster.
 - [[Kubernetes Service#Kube-proxy]]
 
 ### Add-ons
-Add-ons are cluster features and functionality not yet available in Kubernetes, therefore implemented through 3rd-party plugins and services.
+Add-ons extend a cluster with supporting capabilities; they may be first-party or third-party components, and are not all absent from the Kubernetes ecosystem itself.
 - DNS  
     Cluster DNS is a DNS server required to assign DNS records to Kubernetes objects and resources.
 - Dashboard  
@@ -57,3 +57,4 @@ Add-ons are cluster features and functionality not yet available in Kubernetes, 
 
 # References
 [[4 - Kubernetes Architecture]]
+[Dockershim removal FAQ](https://kubernetes.io/blog/2022/02/17/dockershim-faq/)

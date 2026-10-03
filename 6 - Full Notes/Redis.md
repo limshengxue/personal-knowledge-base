@@ -1,19 +1,19 @@
 2026-03-15 15:55
 
-Tags: [[redis]]
+Tags: [[3 - Tags/redis|redis]]
 
 # Redis
 ## What is Redis
 - Memory first
 	- In-memory storage provides unparalleled data access speed
-	- Data stays as long as you need it
+	- Retention depends on expiry, eviction, persistence configuration, and operational failures.
 - Key-value data store
 	- No-SQL database
 	- Support standard data structures like strings, lists, JSON, vectors
 
 ## Main Use Cases
 ### Cache
-- Provide response in less than 1 ms
+- In-memory access can provide low latency; end-to-end response time depends on command, network, workload, and deployment.
 
 ### Search and query
 - Search by text, identifiers, range, or location
@@ -33,9 +33,10 @@ Tags: [[redis]]
 ## Redis Products
 - Open Source
 - Redis Cloud - managed DaaS
-- Redis Cloud - self managed
+- Redis Software - self-managed enterprise deployment
 - Redis Insight - allow connecting to Redis database
 
 # References
 [[Explore Redis for Developers]]
 [[Redis Use Case]]
+[Redis Software](https://redis.io/docs/latest/operate/rs/)

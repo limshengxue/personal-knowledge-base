@@ -8,9 +8,10 @@ Tags: [[gen ai]] [[mcp]]
 - Shifts the burden of tool definitions and execution onto MCP Server
 - *Transport Agnostic* - can communicate over different protocols
 	- Std IO - Same machine
-	- HTTP/Web sockets - for different machines
+	- Streamable HTTP - remote or local HTTP endpoints
+	- WebSockets require a custom transport binding; see [[MCP Transport]].
 - *Communication* - specifications define different types of messages that can be exchanged
-	- Some common ones are `ListToolsRequest`, `ListTooslResult`, `CallToolRequest`, `CallToolResult`
+	- Some common ones are `ListToolsRequest`, `ListToolsResult`, `CallToolRequest`, `CallToolResult`
 
 ## The Problem it is Solving
 - M x N integration problem
@@ -34,6 +35,11 @@ Tags: [[gen ai]] [[mcp]]
 - Server
 	- External program or service that exposes capabilities via the MCP protocol
 
+
+## Protocol Boundaries
+- [[MCP Message]] describes requests, results, notifications, and revision-specific lifecycle behavior.
+- Servers can expose [[MCP Tool]], [[MCP Resource]], and [[MCP Prompt]] capabilities.
+- Standardization reduces bespoke integrations; it does not make every host support every capability or grant a server security authority.
 
 # References
 [[Introducing MCP]]

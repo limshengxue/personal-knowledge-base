@@ -40,7 +40,7 @@ class ImageProcessingJob {
 - Replacing the provider leaves the job unchanged when the replacement honours the same contract.
 
 ## Design the Abstraction Around the Consumer
-- Describe required capabilities rather than exposing every operation of a provider SDK.
+- Use [[Abstraction]] to describe required capabilities rather than exposing every operation of a provider SDK.
 - Keep provider-specific tokens and types out of the contract when the workflow does not need them.
 - An interface that merely reproduces provider details can preserve the original coupling despite adding another type.
 - The abstraction can be an [[Interfaces vs Abstract Classes|interface or abstract class]], or another suitable contract; DIP is not tied to Java's `interface` keyword.

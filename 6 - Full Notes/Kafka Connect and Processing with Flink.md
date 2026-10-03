@@ -3,32 +3,21 @@
 Tags:[[data streaming]] [[kafka]] [[flink]]
 
 # Kafka Connect and Processing with Flink
-## Kafka Connect
-- Talk to things that is not Kafka to take in data into Kafka
-- Kafka Integration API
-- Source Connector - read data from external system, write to topic
-- Sink Connector - consume from topic, write to external system
+- Kafka Connect integrates Kafka with external data systems using connectors.
+- Its responsibility is data movement, rather than arbitrary stateful stream computation.
 
-## Single Message Transform
-- Simple way to transform message in the Kafka Stream
-- The operations must be stateless
-- Filter, Add field, Extract something as a key
+## Source and Sink Connectors
+- A source connector reads an external system and writes records to [[Kafka Topics and Messages]].
+- A sink connector reads Kafka records and writes an external destination.
+- Workers run configured connectors and tasks; deployment and connector support determine their behavior.
 
-## Stream Processing
-- Consumer grow in complexity
-- Stateful operation required like aggregation, joining, ...
-- Flink has become the defacto standard form stream processing with Kafka
+## Single Message Transforms
+- SMTs apply stateless transformations to individual connector records.
+- Examples include filtering, adding fields, and extracting a key.
+- They are not a substitute for joins, aggregations, or state accumulated across events.
 
-### Flink API
-- A tool provided to process the data in the Kafka stream
-- DataStream API
-	- Low level, not recommended for new design
-- Table API
-	- In Java/Python, SQL-ish
-- SQL API
-	- In SQL
-
- 
+## When Processing Is Needed
+Use [[Flink Stream Processing]] for the source's discussion of stateful stream operations and API selection. Other processing frameworks may also fit the workload.
 
 # References
 [[5 - Kafka Connect, Stream Processing]]

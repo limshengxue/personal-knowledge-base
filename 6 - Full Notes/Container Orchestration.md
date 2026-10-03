@@ -39,3 +39,4 @@ Most container orchestrators can:
 
 
 # References
+[[2 - Source Materials/Course/LF - Intro to Kubernetes/2 - Container Orchestration|2 - Container Orchestration]]

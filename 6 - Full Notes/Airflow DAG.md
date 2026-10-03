@@ -3,50 +3,46 @@
 Tags: [[pipeline]] [[airflow]]
 
 # Airflow DAG
-## What is DAG
-- Directed, there are inherent flow representing dependencies between tasks
-- Acyclic, does not loop/cycle
-- Graph, the actual set of components
+- A workflow is a set of steps that accomplishes a task, such as downloading, transforming, and loading data.
+- A directed acyclic graph (DAG) expresses task dependencies without cycles.
+- Airflow defines workflows in Python; individual tasks can run programs in other languages.
+- [[Airflow Operators]] define work, and [[Airflow Scheduler]] determines when runs and runnable tasks are scheduled.
 
-## DAG in Airflow
-- Written in Python (components can be written in other language)
-- Are made up of components (usually tasks)
-- Contain dependencies defined explicitly or implicitly
-- DAG must be placed in DAG folder, which can be found in `airflow.cfg` or `airflow info`
+## Airflow 3 Example
+This example requires Airflow 3 and the standard provider:
 
-## Define a DAG In Python
 ```python
-from airflow import DAG
-from datetime import datetime
+import pendulum
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.empty import EmptyOperator
 
-
-default_arguments = {
-	'owner': 'jdoe',
-	'start_date' : datetime(2020, 1, 20)
-}
-
-with DAG('etl_workflow' , default_args=default_arguments) as etl_dag:
-
+with DAG(
+    dag_id="etl_workflow",
+    start_date=pendulum.datetime(2026, 1, 1, tz="UTC"),
+    schedule="@daily",
+    catchup=False,
+    default_args={"owner": "jdoe", "retries": 1},
+) as etl_dag:
+    begin = EmptyOperator(task_id="begin")
+    finish = EmptyOperator(task_id="finish")
+    begin >> finish
 ```
 
-## CLI Tool
-- Useful for troubleshooting or determine information 
-- Show DAG - `airflow dags list`
-- Show error in DAG - `airflow dags list-import-errors`
-- To run a DAG - `airflow dags trigger -e <date> <dag>` (set date to -1)
- 
-## DAG Reporting
-- For reporting purpose, we can configure alert according to different status of the DAG
-```python
-default_args = {
-	'email' : [''],
-	'email_on_failure' : True,
-	'email_on_retry' : False,
-	'email_on_success' : True,
-}
-```
+## Discovery and CLI
+- DAGs must be discoverable through the configured DAG folder or bundle.
+- `airflow dags list` lists discovered DAGs.
+- `airflow dags list-import-errors` identifies loading failures.
+- `airflow dags trigger etl_workflow` creates a manual run.
+- Check the installed CLI's `--help` before adding logical-date options; old examples using `-e` are version-specific.
+
+## Reporting
+- Operator defaults can include `email_on_failure` and `email_on_retry` when email is configured.
+- `email_on_success` is not a standard operator default. Use a supported success callback or notifier.
+- Task retries, DAG-run monitoring, and deadline alerts solve different problems; see [[Airflow Tasks]] and [[Airflow SLA]].
 
 # References
 [[2 - Airflow DAG]]
 [[8 - Common Troubleshooting]]
 [[9 - SLA and Reporting in Airflow]]
+[[1 - Introduction to Airflow]]
+[Airflow CLI](https://airflow.apache.org/docs/apache-airflow/stable/cli-and-env-variables-ref.html)

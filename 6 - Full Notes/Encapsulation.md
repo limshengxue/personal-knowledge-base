@@ -27,7 +27,7 @@ Tags: [[software architecture]]
 
 ## Encapsulation vs Abstraction
 - **Encapsulation** controls access to state and implementation details and channels changes through an intentional boundary.
-- **Abstraction** presents the relevant capabilities while leaving unnecessary details out of the caller's model.
+- **[[Abstraction]]** presents the relevant capabilities while leaving unnecessary details out of the caller's model.
 - A wallet's debit operation abstracts the calculation while encapsulation prevents callers from bypassing its balance rules.
 - Both support an API that is useful without requiring callers to understand or manipulate its internal representation.
 

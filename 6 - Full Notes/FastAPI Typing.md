@@ -18,10 +18,16 @@ Tags: [[fastapi]]
 ## Common Types
 - Simple type like `int` `str`
 - Generic type like `list` `tuple` `dict`
-	- `Optional` means the variable can be null like `name: Optional[str, None]` means the variable can be `str` or null
+	- `Optional` means the variable can be null like `name: Optional[str]` means the variable can be `str` or null
 	- But FastAPI encourage using the union like `name : str | None` as it is more intuitive and can avoid mistaken as the variable is optional
 - Pydantic model - data type declared as a class with attributes
 
 
+## Nullable vs Optional Input
+- `Optional[str]` and `str | None` allow the value `None`.
+- A default such as `= None` determines whether the caller can omit the argument; nullable typing alone does not make input optional.
+- Plain Python annotations do not perform runtime validation by themselves; FastAPI and Pydantic interpret them.
+
 # References
 [[2 - Source Materials/Articles/FastAPI Typing|FastAPI Typing]]
+[Python Optional](https://docs.python.org/3/library/typing.html#typing.Optional)

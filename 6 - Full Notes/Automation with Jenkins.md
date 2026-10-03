@@ -8,10 +8,10 @@ Tags: [[ci cd]] [[jenkins]]
 - Compile code > Run tests > Build a new version of the app > Deploy the app
 
 ### Jenkins Infrastructure
-- Master 
+- Controller 
 	- Control Pipeline
 	- Schedule Build
-- Agent
+- [[6 - Full Notes/Jenkins Agent|Agent]]
 	- Execute the Build
 
 ## Types of Jenkins Jobs

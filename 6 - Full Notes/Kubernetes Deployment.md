@@ -3,8 +3,8 @@
 Tags: [[kubernetes]] [[Kubernetes Object Model]]
 
 # Kubernetes Deployment
-- Part of the control plane node's controller manager
-- Allows seamless application updates and rollbacks, known as the default RollingUpdate strategy through rollouts and rollbacks
+- A workload API object reconciled by the Deployment controller.
+- Uses RollingUpdate by default to replace replicas gradually; readiness checks and sufficient capacity help preserve availability, but updates and rollbacks are not automatically downtime-free.
 - Directly manages ReplicaSets
 - The common management hierarchy is 
 	- Deployment -> ReplicaSets [[Kubernetes ReplicaSet]] -> Pod [[Kubernetes Pod]]
@@ -21,18 +21,23 @@ kubectl rollout history deploy nginx-deployment
 kubectl rollout history deploy nginx-deployment --revision=1
 
 ## Update container image
-kubectl set image deploy nginx-deployment nginx=nginx:1.21.5
+kubectl set image deploy nginx-deployment nginx=nginx:stable
 
 ## Rollback to previous revision
 kubectl rollout undo deploy nginx-deployment --to-revision=1
 ```
 
-## DaemonSets
-- Works similar as Deployment with 1 distinct features: ensure 1 pod per nodes
-- Run on all nodes or selected subset
-- Useful for daemon that run program like monitoring
-- Whenever a Node added to the cluster, a Pod from the DaemonSet placed on it
+## Related Workload
+Use [[Kubernetes DaemonSets]] when the desired placement is one pod per eligible node rather than a global replica count.
 
+## Application Deployment Strategies
+- Rolling update gradually replaces replicas; configure readiness checks and rollout bounds.
+- Canary runs old/new releases together and sends selected traffic to the new release. Replica ratios can approximate traffic share, but do not guarantee request-level weights.
+- Blue/green maintains separate old/new environments and switches traffic after verification; the inactive version is not merely a backup pod.
+- Explicit weighted routing may require a gateway or [[Kubernetes Service Mesh]].
+- Rollback must consider database/schema compatibility and external effects, not only container images.
+
+The image update command is illustrative. Pin an approved version or digest in real deployments, and verify readiness with [[Kubernetes Liveness and Probe]] before judging a rollout healthy.
 
 # References
 [[8 - Kubernetes Object Model]]

@@ -3,99 +3,52 @@
 Tags: [[mcp]] [[gen ai]]
 
 # MCP Roots
-When MCP Client call some tools that require file access, passing in the file path as argument, server cannot handle it (will throw file not exist)
-- If MCP Server and Client is on the same machine, maybe can solve by the user typing in the full path, but this is not user-friendly
-- Root can solve this problem
+- Roots identify workspace locations a client shares with a server.
+- They are informational guidance, not filesystem mounts or access-control grants.
+- A root URI does not make a client-only file exist on a remote server.
+- Enforce actual authority separately; see [[Coding Agent Permissions and Sandboxing]].
 
-## Grant Permission to Folders/File
-- The MCP Server will implement 2 methods, `read_dir` and `list_roots`
-- `read_dir` return a list of files/folders in a specific directory
-- `list_roots` return a list of folders/files/uri that the server can work on
+## Client and Server Responsibilities
+- The client supplies roots when the negotiated protocol and host support them.
+- `read_dir` and `list_roots` in the source are application-defined tools, not mandatory server tool names.
+- In the legacy protocol, the server requests roots from the client through the session.
+- Revision 2026-07-28 and newer SDK interfaces use different request handling; verify the installed implementation.
 
-## Implementation
-Client define function that create root object, root object need to be with `file://` according to MCP
+## Portable File URIs
+Use the path library rather than constructing a Windows URI with string concatenation:
+
 ```python
-    def _create_roots(self, root_paths: list[str]) -> list[Root]:
-        """Convert path strings to Root objects."""
-        roots = []
-        for path in root_paths:
-            p = Path(path).resolve()
-            file_url = FileUrl(f"file://{p}")
-         roots.append(Root(uri=file_url, name=p.name or "Root"))
+from pathlib import Path
 
-        return roots
+def root_uri(path):
+    return Path(path).resolve().as_uri()
 ```
 
-Client define method that return root. This method will be called by Server when needed.
-```python
-    async def _handle_list_roots(
-        self, context: RequestContext["ClientSession", None]
-    ) -> ListRootsResult | ErrorData:
+The path must represent a location the application actually understands.
 
-        """Callback for when server requests roots."""
-        return ListRootsResult(roots=self._roots)
+## Application Containment Check
+This illustrates a local policy check, not a complete security boundary:
+
+```python
+from pathlib import Path
+
+def is_within_root(requested_path, root_path):
+    resolved_request = Path(requested_path).resolve()
+    resolved_root = Path(root_path).resolve()
+    try:
+        resolved_request.relative_to(resolved_root)
+    except ValueError:
+        return False
+    return True
 ```
 
-MCP Server define `list_roots` and `read_dir` tools
-```python
-@mcp.tool()
-async def list_roots(ctx: Context):
-    """
-    List all directories that are accessible to this server.
-
-    These are the root directories where files can be read from or written to.
-    """
-
-    roots_result = await ctx.session.list_roots()
-    client_roots = roots_result.roots
-
-    return [file_url_to_path(root.uri) for root in client_roots]
-
-  
-  
-
-@mcp.tool()
-async def read_dir(
-    path: str = Field(description="Path to a directory to read"),
-    *,
-    ctx: Context,
-):
-
-    """Read directory contents. Path must be within one of the client's roots."""
-
-    requested_path = Path(path).resolve()
-
-
-    if not await is_path_allowed(requested_path, ctx):
-        raise ValueError("Error: can only read directories within a root")
-
-    return [entry.name for entry in requested_path.iterdir()]
-```
-
-MCP SDK does not promise the file is accessible. We need to check.
-```python
-async def is_path_allowed(requested_path: Path, ctx: Context) -> bool:
-    roots_result = await ctx.session.list_roots()
-    client_roots = roots_result.roots
-
-
-    if not requested_path.exists():
-        return False
-
-  
-    if requested_path.is_file():
-        requested_path = requested_path.parent
-
-    for root in client_roots:
-        root_path = file_url_to_path(root.uri)
-        try:
-            requested_path.relative_to(root_path)
-            return True
-        except ValueError:
-            continue
-
-    return False
-```
+- Resolve the requested path and root before comparing ancestry; do not rely on string prefixes.
+- Reject nonexistent paths when the operation requires an existing file.
+- Validate directory type before listing entries.
+- Symlink changes and time-of-check/time-of-use races require additional protection where paths are untrusted.
+- A sandbox, credentials, and server-side authorization remain necessary for sensitive operations.
+- Configure compatible roots support through [[MCP Client Configuration and Integration]].
 
 # References
 [[3 - Roots]]
+[SDK roots and compatibility](https://py.sdk.modelcontextprotocol.io/v2/handlers/sampling-and-roots/)

@@ -18,36 +18,39 @@ Allow MCP Server to expose data to client
 ### MCP Server for Resource
 ```python
 @mcp.resource(
-    "docs://documents", # uri
-    mime_type="application/json",
+    "docs://documents", # uri
+    mime_type="application/json",
 )
 def list_documents() -> list[str]:
-    return list(docs.keys())
+    return list(docs.keys())
 
 @mcp.resource(
-    "docs://documents/{doc_id}", # uri
-    mime_type="text/plain",
+    "docs://documents/{doc_id}", # uri
+    mime_type="text/plain",
 )
 def get_document(doc_id: str) -> str:
-    if doc_id not in docs:
-        raise ValueError(f"Document with id {doc_id} not found.")
-    return docs[doc_id]
+    if doc_id not in docs:
+        raise ValueError(f"Document with id {doc_id} not found.")
+    return docs[doc_id]
 ```
 
 
 ### MCP Client for Resource
 ```python
-    async def read_resource(self, uri: str) -> Any:
-        result = await self.session().read_resource(AnyUrl(uri))
-        resource = result.contents[0]
+    async def read_resource(self, uri: str) -> Any:
+        result = await self.session().read_resource(AnyUrl(uri))
+        resource = result.contents[0]
 
-        if isinstance(resource, types.TextResourceContents):
-            if resource.mimeType == "application/json":
-                return json.loads(resource.text)
-            return resource.text
+        if isinstance(resource, types.TextResourceContents):
+            if resource.mimeType == "application/json":
+                return json.loads(resource.text)
+            return resource.text
 ```
 
 
+
+## SDK Version Scope
+The code fragments illustrate the source's 2025-era Python SDK interface. Check installed SDK types and callback signatures before reuse; protocol revision and SDK version are separate choices.
 
 # References
 [[Resource]]

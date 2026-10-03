@@ -3,51 +3,45 @@
 Tags: [[mcp]] [[gen ai]] [[networking]]
 
 # MCP Transport
-MCP Transport refer to the way of passing the JSON message between client and server
+- A transport frames and delivers the JSON-RPC messages described in [[MCP Message]].
+- Match the protocol revision, transport binding, and implementation versions; “HTTP” alone does not establish compatibility.
 
-## Transport Scenario
-- There are 4 transport scenario
-	- Initial Request from Client to Server (e.g. [[MCP Tool]])
-	- Response from Server to Client
-	- Initial Request from Server to Client (e.g. [[MCP Sampling]], [[MCP Logging and Notification]], [[MCP Roots]])
-	- Response from Client to Server
-- All 4 can be easily handled by stdio but not streamable HTTP
+## Revision 2026 07 28
+- Standard bindings are stdio and Streamable HTTP; WebSockets require a custom binding.
+- Requests carry version and capability metadata per request.
+- Streamable HTTP uses POST to one endpoint with a JSON response or request-scoped SSE stream.
+- Servers do not initiate standalone JSON-RPC requests in this revision; interactive operations use the supported message patterns.
+- The older connection-scoped initialization/session model is not universal current behavior.
 
-## Stdio (Standard Input Output)
-- Client launches the MCP Server as a subprocess
-- Client write to Server stdin
-- Server responds by writing to stdout
-- *Only suitable when client and server on same machine*
+## Stdio
+- A client launches a local server subprocess.
+- Client protocol messages go to the process's stdin; server protocol output goes to stdout.
+- Keep diagnostic logs on stderr.
+- Paths visible to that server depend on its environment and authority.
 
-## Streamable HTTP
-- Allow *remote MCP server*
+## Legacy HTTP Sessions
+For revision 2025-11-25 and compatible earlier implementations:
+- A server may return `MCP-Session-Id` in the HTTP response containing `InitializeResult`.
+- The client sends that header on subsequent requests only when a session ID was returned.
+- SSE can carry server requests and notifications; not every response must open a dedicated stream.
+- [[MCP Sampling]] and [[MCP Roots]] examples using a session back-channel belong to this legacy model.
 
-### HTTP Communication
-- HTTP clients can easily initiate requests to servers (server hosted in a known URL)
-- Server can easily respond
-- HTTP servers cannot easily initiate communication with a client
-	- Client don't have a known URL
-- Some MCP requests is hard to handle by HTTP
-	- Sampling, List Roots, Progress Update, Logging
+## Scaling and Security
+- Do not assume that all horizontal scaling requires one specific legacy stateless configuration.
+- Routing, state sharing, reconnection, and negotiated protocol behavior determine the architecture.
+- Validate authentication, permitted operations, and the actual endpoint before enabling remote access through [[MCP Client Configuration and Integration]].
 
-### Workaround - SSE
-- During initialization, MCP Server send back `mcp-session-id` using *Initialize Notification* and MCP Client must include the `mcp-session-id` in every subsequent request to the Server
-- Client can make a request to Server, Server send back SSE Response to create a SSE connection
-- The SSE connection allow server to send requests to the client
-- When Client send a request, server create a new SSE connection dedicatedly for message related to that request
+## Legacy Course Diagrams
+These 2025-era diagrams are retained for comparison. Their session/SSE setup must not be treated as the universal current lifecycle; see the versioned descriptions above.
 
 ![[Attachments/Pasted image 20251026102310.png]]
 
 ![[Attachments/Pasted image 20251026102445.png]]
 
-
-### Stateless
-- Stateless HTTP is required when we need horizontal scaling
-- For example, when a bunch of server instance stay behind a load balancer, we might not able to get the same instance everytime, this make SSE difficult
-
 ![[Attachments/Pasted image 20251026103853.png]]
 
-
-
 # References
-[[MCP Transport]]
+[[2 - Source Materials/Course/Anthropic - MCP Advanced Technique/5 - Transport|5 - Transport]]
+[[2 - Source Materials/Course/MCP - HF/3 - The Communication Protocol|3 - The Communication Protocol]]
+[Current transport bindings](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports)
+[Legacy transport](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)

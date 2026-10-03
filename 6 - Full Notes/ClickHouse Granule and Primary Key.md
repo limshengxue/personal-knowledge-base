@@ -3,50 +3,38 @@
 Tags: [[clickhouse]] [[olap]] [[database]] [[indexing]]
 
 # ClickHouse Granule and Primary Key
-## Primary Key
-- Determine the sort order
-- *Have nothing to do with uniqueness*
-- Determine the columns used to build the primary index
-- Therefore, `ORDER BY` and `PRIMARY KEY` is mostly equivalent
+- MergeTree stores sorted data and uses a sparse primary index to avoid reading irrelevant ranges.
+- Unlike a relational primary-key constraint, this key does not enforce uniqueness.
 
-## Primary Index
-- Built based on primary key 
-- Each MergeTree table has a primary index
-- The primary index consists of a key per granule
-- Granule is the smallest amount of data that ClickHouse reads when searching row (8192 row)
-- The key is not the unique value of the primary key, it is the value of the first row (its primary key) of the granule
-- As the data is sorted by primary key, this info allow us to skip granule, for example, skipping granule 1 and granule 4 and any granule after granule 4
+## Sorting Key and Primary Key
+- `ORDER BY` defines the sorting key inside data parts.
+- Without an explicit `PRIMARY KEY`, the sorting key also supplies the primary index key.
+- A separately defined primary key must be a prefix of the sorting key.
+- Extra sorting-key columns can influence storage ordering without being stored in the primary index.
+
+![[Attachments/Pasted image 20251109104429.png]]
+
+## Granules and Sparse Index Marks
+- An index mark identifies a granule boundary using the key at the beginning of that range.
+- `index_granularity` commonly defaults to 8192 rows, but adaptive byte limits can produce smaller granules.
+- It is not a guarantee that every granule contains exactly 8192 rows or has its own execution thread.
+- Read scheduling distributes ranges through the query pipeline.
 
 ![[Attachments/Pasted image 20251109102829.png]]
 
-## Granule Processing
-- Each granule are sent to a thread for processing
+## Choosing Keys
+- Start from frequent filters, ranges, and ordering requirements.
+- Key-column order affects usable index prefixes; cardinality alone is not a universal ordering rule.
+- Measure read rows, memory use, compression, insert costs, and representative query plans.
+- A longer key consumes more index memory.
+- [[6 - Full Notes/ClickHouse Partition|ClickHouse Partition]] primarily serves data management and is not a substitute for a useful sorting key.
 
-## Primary Key Best Practices
-- We can observe how many rows are read in the query in the SQL console
-- Filter starting with the *first column provide optimal performance*
-- We have to value the pros and cons of index
-- Index bring cost of additional storage and processing during writing of data and merging of parts
-- Primary key cannot be too huge, **it must fit in the memory**
-- Use columns that are *frequently queried*
-- If multiple primary key columns have equal importance, order by *cardinality* (allow skipping more granule)
-- Primary Key also affect the *compression rate* - string give better compression
-
-## Order By
-- It is equivalent to primary key
-- But it can also use to *extend* primary key if we want a different sort order
-- For example, the z column below that exist in ORDER BY but not primary key, will not be in primary index
-![[Attachments/Pasted image 20251109104429.png]]
-
-
-## Additional Primary Indexes
-- Create 2 tables for the same data
-- Use projection
-- Use a materialized view
-	- Stores the data in a separated table with SELECT statement
-	- Sort the data in the SELECT statement
-- Define a skipping index
-
+## Alternative Access Paths
+- Projections and materialized views can supply different physical layouts.
+- A materialized view's destination table engine and sorting key determine its storage ordering; SELECT ordering alone is not that definition.
+- Data-skipping indexes summarize ranges and are not additional primary indexes.
+- Maintaining duplicate tables or derived layouts adds storage and update costs.
 
 # References
 [[4 - Clickhouse Data Parts]]
+[MergeTree keys and granularity](https://clickhouse.com/docs/reference/engines/table-engines/mergetree-family/mergetree)

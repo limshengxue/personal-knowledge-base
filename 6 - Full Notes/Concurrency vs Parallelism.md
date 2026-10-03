@@ -3,14 +3,17 @@
 Tags: [[concurrency]] [[parallelism]]
 
 # Concurrency vs Parallelism
-## Concurrency vs Parallelism
-- The idea of asynchronous code is sometimes called "concurrency" and it is different from parallelism
-- Parallelism means to execute a tasks with multiple works, but still if IO Bound operation is there, the worker has to wait if the code is synchronous
-- Parallelism should be used to handle CPU bound operations (tasks that need many working instead of waiting)
-- Example of CPU bound operations
-	- Audio/Image processing
-	- Machine Learning/Deep Learning
+- Concurrency means multiple tasks can make progress over overlapping periods.
+- Parallelism means work executes simultaneously on multiple execution resources.
+- Asynchronous programming is one way to express concurrency, not its definition.
 
+## Choosing an Approach
+- I/O-heavy workloads can benefit from concurrency while operations wait for external results.
+- CPU-heavy workloads may benefit from parallel execution when the runtime and hardware permit it.
+- Threads, processes, coroutines, and distributed workers have different costs and constraints.
+- `await` does not by itself start several operations concurrently; the program must arrange overlapping work.
+- Neither approach removes dependencies, shared-state hazards, or the need to measure the workload.
 
 # References
 [[2 - Source Materials/Articles/FastAPI Concurrency and async await|FastAPI Concurrency and async await]]
+[FastAPI concurrency](https://fastapi.tiangolo.com/async/)

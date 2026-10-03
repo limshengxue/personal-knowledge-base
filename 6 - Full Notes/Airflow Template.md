@@ -3,11 +3,11 @@
 Tags: [[airflow]] [[pipeline]] [[jinja]]
 
 # Airflow Template
-- Allow substituting information during a RAG run
+- Allow substituting information during a DAG run
 - Provide added flexibility when defining tasks
 - Created using Jinja templating language
-- Several fields of the operators can support like the `subject` in `EmailOperator`, `command` in `BashOperator`
-- Can run `help(<operator>` like `help(BashOperator)` to decide which fields can accept template
+- Several fields of the operators can support like the `subject` in `EmailOperator`, `bash_command` in `BashOperator`
+- Can run `help(<operator>)` like `help(BashOperator)` to decide which fields can accept template
 
 ## Simple Example Use with Bash Operator (Echo Filename)
 ```python

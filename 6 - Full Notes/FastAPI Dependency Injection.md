@@ -2,7 +2,7 @@
 
 Tags: [[fastapi]]
 
-# FastAPI Dependencies
+# FastAPI Dependency Injection
 ## [[Dependency Injection]]
 - There is a way for code to declare things that it requires to work and use (dependencies)
 - The framework (FastAPI) take care of doing whatever is needed to provide the code with those needed dependencies
@@ -13,7 +13,7 @@ Tags: [[fastapi]]
 	- Etc
 
 ## Creating Dependent
-- We can create and inject dependent using the `Annotated` typing
+- Declare dependencies with `Annotated`; see [[6 - Full Notes/FastAPI Typing|FastAPI Typing]] for the typing syntax.
 - The dependent can take in the argument that path operation function take
 ```python
 from typing import Annotated
@@ -72,12 +72,13 @@ async def read_items(commons: Annotated[CommonQueryParams, Depends(CommonQueryPa
     return response
 ```
 
-## Singleton
-- By default, dependency referred multiple times is only called once
-- We can set `use_cache` to True to disable reused
-```
-async def needy_dependency(fresh_value: Annotated[str, Depends(get_value, use_cache=False)]): 
-return {"fresh_value": fresh_value}
+## Per Request Dependency Cache
+- Within one request, FastAPI normally calls a shared dependency once and reuses its result.
+- This is not a process-wide singleton; another request resolves its own dependencies.
+- Set `use_cache=False` to request a fresh call instead of using the cached result.
+```python
+async def needy_dependency(fresh_value: Annotated[str, Depends(get_value, use_cache=False)]):
+    return {"fresh_value": fresh_value}
 ```
 
 
@@ -120,5 +121,8 @@ async def get_db():
         db.close()
 ```
 
+The header-token and DBSession fragments are teaching examples, not production authentication or a complete database setup. Use appropriate security dependencies and avoid blocking database operations inside async handlers; see [[FastAPI async await]].
+
 # References
 [[FastAPI Dependencies]]
+[Dependency cache](https://fastapi.tiangolo.com/tutorial/dependencies/sub-dependencies/)

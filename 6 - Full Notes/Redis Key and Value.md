@@ -1,6 +1,6 @@
 2026-03-15 15:57
 
-Tags: [[redis]]
+Tags: [[3 - Tags/redis|redis]]
 
 # Redis Key and Value
 ## Value
@@ -27,8 +27,8 @@ Tags: [[redis]]
 	- Keys are persistent by default
 - Volatile key
 	- Live until TTL (automatically removed)
-	- `EXPIRE product:name "apple" 30` - set TTL to 30 seconds
-	- `TTL product:name` - check if key still alive, -1 alive, -2 not alive
+	- `EXPIRE product:name 30` - set TTL to 30 seconds
+	- `TTL product:name` - remaining seconds; -1 means the key has no expiry, -2 means it does not exist.
 	- Use Cases
 		- Caching
 		- Session management
@@ -47,5 +47,7 @@ Tags: [[redis]]
 
 
 # References
-[[Use Key Expiration]]
-[[Redis Key and Value]]
+[[2 - Source Materials/Course/Get Started with Redis/Use Key Expiration|Use Key Expiration]]
+[[2 - Source Materials/Course/Get Started with Redis/Redis Keys, Values and Strings|Redis Keys, Values and Strings]]
+[EXPIRE](https://redis.io/docs/latest/commands/expire/)
+[TTL](https://redis.io/docs/latest/commands/ttl/)

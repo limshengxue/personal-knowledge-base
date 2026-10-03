@@ -7,10 +7,10 @@ Tags: [[clickhouse]] [[database]] [[olap]]
 - ClickHouse data types can be categorized into categories like Int, Decimal, String, etc
 - ClickHouse is written in cpp, so it mimics the data types of cpp
 - Choose a proper one based on the understanding of the data
-- Prefer `Decimal` over `Float` for better precision and efficiency
+- Use `Decimal` when exact decimal scale is required, such as monetary calculations. It is not automatically faster than `Float`; choose from correctness requirements and measured cost.
 
 ## Nullable
-- Nullable columns cannot be a part of primary key
+- Nullable sorting/primary-key columns are disabled by default for MergeTree. `allow_nullable_key` permits them when explicitly enabled, but consider their semantics and cost.
 - If a value is missing for the nullable column, it will be NULL
 - Under the hood, Nullable create an additional binary column to store whether the value is null or not 
 	- Therefore, nullable come with a cost
@@ -40,24 +40,14 @@ ORDER BY table;
 
 ## JSON
 - JSON data type offers true column-oriented storage for JSON data
-	- Fast performance and great compression (better than MongoDB and ElasticSearch)
+	- Performance and compression depend on data, queries, and the comparison configuration; no universal MongoDB/Elasticsearch ranking follows from the type.
 ![[Attachments/Pasted image 20251115111923.png]]
 
-## Default Columns
-- Default value used when not provided
-
-## Ephemeral Columns
-- Mark a column as *ephemeral* and its value is not stored
-	- The value will also not returned in SELECT
-- Used as placeholder for incoming data that should be ignored
-- Can be used with *materialized* columns
-
-## Materialized Columns
-- Calculated at *insert* time
-- `Select *`query do not return materialized columns, unless we specify the column name
-![[Attachments/Pasted image 20251115112759.png]]
-
+## Column Expressions
+Defaults and insert-time computed values are covered in [[ClickHouse Default and Computed Columns]].
 
 # References
 [[2 - Source Materials/Course/Clickhouse Level 2/ClickHouse Data Types]]
 [[ClickHouse Special Columns]]
+[Decimal representation](https://clickhouse.com/docs/reference/data-types/decimal)
+[Nullable key setting](https://clickhouse.com/docs/reference/engines/table-engines/mergetree-family/mergetree)

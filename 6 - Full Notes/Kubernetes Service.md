@@ -3,173 +3,109 @@
 Tags: [[kubernetes]] [[Kubernetes Object Model]]
 
 # Kubernetes Service
-- To access the application, the user or another application need to connect to the Pod
-- The problem is Pod is ephemeral (can be disposed, rescheduled) in k8s (IP address allocate to them cannot be static)
-- Service is created to solve this problem
-- It create a higher-level abstraction, groups Pods and define policy to access them
-- This grouping is achieved using Labels and Selectors.
-- Service can expose a Pod, ReplicaSets, Deployments, etc
-- Even with single Pod, using Service benefit in situation of self-healing
+A Service provides a stable access abstraction for changing [[Kubernetes Pod|Pod]] endpoints. A selector-based Service discovers matching Pods through labels; it does not select Deployment or ReplicaSet objects directly.
 
-## Operators with Pod with Label
-- The label at Deployment level has nothing to do with Service later, it is purely for organization purpose
-- `matchLabels` in selector define which pod this Deployment own
-- the label at `specs` level define the pod label, it tie to the selector of the deployment and later used by the Service
+## Matching Deployment and Service Labels
+A [[Kubernetes Deployment]] selector matches its Pod-template labels. A Service uses those same Pod labels; the Deployment's own metadata labels do not determine Service membership.
+
 ```yaml
-**apiVersion: apps/v1  
-kind: Deployment  
-metadata:  
-  labels:  
-    app: frontend  
-  name: frontend  
-spec:  
-  replicas: 3  
-  selector:  
-    matchLabels:  
-      app: frontend  
-    template:  
-      metadata:  
-        labels:  
-          app: frontend  
-      spec:  
-        containers:  
-        - image: frontend-application  
-        name: frontend-application  
-        ports:  
-        - containerPort: 5000**
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: example/frontend:1.0
+          ports:
+            - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
 ```
 
-### Declaring Service Manifest
-Service with 1 port
+Replace the illustrative image with an application that listens on port 5000. Save both objects in `frontend.yaml`, then run `kubectl apply -f frontend.yaml`.
+
+## Endpoints and Routing
+EndpointSlice objects track backend addresses and ports. Inspect them with:
+
+```bash
+kubectl get service frontend-svc
+kubectl get endpointslices -l kubernetes.io/service-name=frontend-svc
+```
+
+The older Endpoints API is deprecated from Kubernetes 1.33; prefer EndpointSlices.
+
+### Kube-proxy
+In clusters using kube-proxy, it watches Services and EndpointSlices and programs node-level forwarding rules. Implementations vary: iptables, nftables, IPVS, and replacement dataplanes are not identical. Some network plugins replace kube-proxy entirely.
+
+Traffic policies select **endpoints**, not different Services:
+- `internalTrafficPolicy: Cluster` allows cluster-wide ready endpoints; `Local` restricts internal traffic to ready endpoints on the source node.
+- `externalTrafficPolicy: Local` restricts external Service traffic to node-local endpoints and preserves the client source IP.
+- A node without eligible local endpoints cannot serve traffic governed by a Local policy.
+
+## Service Types
+- **ClusterIP**: default internal virtual IP.
+- **NodePort**: exposes a port on nodes, usually from 30000–32767; actual reachability depends on routing and firewalls.
+- **LoadBalancer**: requests an external load balancer from the infrastructure integration. NodePorts are normally allocated, but some implementations can disable them.
+- **ExternalName**: provides a DNS CNAME alias, not a traffic proxy.
+
+A multi-port Service must name each port:
+
 ```yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-svc # will become DNS name later
+  name: my-service
 spec:
   selector:
-    app: frontend # define the pod it points to
-ports:
-- protocol: TCP
-  port: 80 # expose 80
-  targetPort: 5000 # target port of the pod in points to
-
-```
-Service with multiple ports
-```yaml
-apiVersion: v1  
-kind: Service  
-metadata:  
-  name: my-service  
-spec:  
-  selector:  
-    app: myapp 
-  type: NodePort  
-  ports:  
-  - name: http  
-    protocol: TCP  
-    port: 8080  
-    targetPort: 80 
-    nodePort: 31080  
-  - name: https  
-    protocol: TCP  
-    port: 8443  
-    targetPort: 443 
-    nodePort: 31443
-```
-Creating the Service object
-`kubectl create -f frontend-svc.yaml`
-
-### Endpoints
-- Endpoint is `PodIP:TargetPort` 
-- They are created and updated dynamically by the Service
-- We can check using `kubectl get svc,ep frontend-svc`
-
-
-## Kube-proxy
-- A daemon that runs on every nodes
-- The backbone that allow Service to function
-- Watch API server for any Services and Endpoints changes
-- How routing works
-	- Configure *iptables* rules for routing
-	- Capture traffic sent to the service
-	- Sent to one of the corresponding endpoints
-- As `kube-proxy` runs on every node, 
-	- every pod on the cluster is possible to use the service 
-	- each node have complete iptable copy
-- Traffic policies
-	- Local - only use Service within the same node
-	- Cluster - can use any Service with a *ready* endpoint (default)
-	- Both can set to `internal` or `external`
-```yaml
-apiVersion: v1  
-kind: Service  
-metadata:  
-  name: frontend-svc  
-spec:  
-  selector:  
-    app: frontend  
-  ports:  
-    - protocol: TCP  
-      port: 80  
-      targetPort: 5000  
-  internalTrafficPolicy: Local  
-  externalTrafficPolicy: Local
+    app: myapp
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 80
+      nodePort: 31080
+    - name: https
+      port: 8443
+      targetPort: 443
+      nodePort: 31443
 ```
 
-## Service Discovery
-- Environment variable
-	- Each newly created pod have env variable to record the IP and port of the Service
-- DNS 
-	- Use add-on DNS (preferred solution)
+`externalIPs` is a field, not a Service type. It assumes external routing is already arranged; it does not allocate addresses. It is deprecated in Kubernetes 1.36.
 
-## Port Forward
-- Forward a local port to an application port (can be deployment, service, or pod container)
-- Allow debug application running in a remote cluster
-```
-$ kubectl port-forward deploy/frontend 8080:5000
-$ kubectl port-forward frontend-77cbdf6f79-qsdts 8080:5000 
-$ kubectl port-forward svc/frontend-svc 8080:80
+## Discovery and Debugging
+Cluster DNS is the usual discovery mechanism. Service environment variables are a snapshot at Pod creation, so Services created later are not automatically added.
+
+```bash
+kubectl port-forward deployment/frontend 8080:5000
+kubectl port-forward service/frontend-svc 8080:80
 ```
 
-## Service Type
-### ClusterIP
-- Default service type
-- Service receive a Virtual IP address, known as its Cluster IP
-- Only accessible within the cluster
-
-### NodePort
-- A high-port, dynamically picked from the default range **30000-32767** is assign to the Service, from all worker nodes
-- For example, if 31111 is assigned, any traffic to 31111 of any node will redirect to the service
-- We can also specify the exact port number given that it is in the range
-- The service is accessible to traffic external from the cluster
-- Possibly used with Ingress when there is too many service which cause the need to open many ports and create a mess
-
-```
-Client
-  ↓
-NodeIP:32233
-  ↓ (kube-proxy rules)
-Service ClusterIP:80
-  ↓ (load-balanced)
-PodIP:5000
-
-```
-
-### Load Balancer
-- Node Port and Cluster IP created automatically
-- External Load balancer route to them
-- Service is exposed at static port on each worker node
-- Use underlying cloud provider's load balancer feature
-
-### External IP
-- Service map to an external IP address
-- Traffic ingressed into the cluster with the External IP get routed to one of the service endpoints
-
-### External Name
-- Create a DNS alias (CNAME) inside the cluster
-- Provide a shortcut to an external service
+Port-forwarding is a debugging tunnel, not production exposure or a test of Service load balancing. Use [[Kubernetes Ingress]] for HTTP routing and [[Kubernetes Network Policies]] for supported network access controls.
 
 # References
 [[10 - Services]]
 [[11 - Service Type]]
+[Services](https://kubernetes.io/docs/concepts/services-networking/service/)
+[EndpointSlices](https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/)
+[Internal traffic policy](https://kubernetes.io/docs/concepts/services-networking/service-traffic-policy/)
+[Kubernetes 1.36 deprecations](https://kubernetes.io/blog/2026/03/30/kubernetes-v1-36-sneak-peek/)

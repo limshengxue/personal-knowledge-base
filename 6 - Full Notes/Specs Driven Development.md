@@ -17,11 +17,11 @@ Tags: [[agentic ai]]
 ![[Attachments/Pasted image 20260411131351.png]]
 在这场反转中： 
 - 维护软件的核心，从“修改代码”，变成了“演进规范”。 
-- 调试 Bug 的核心，从“修复错误代码”，变成了“修正产生错误代码的规范或方案”。 
+- 调试 Bug 时应区分规范、方案与实现错误；并非每个 Bug 都需要修改规范。 
 - 技术重构的核心，从“大规模迁移代码”，变成了“基于同一份规范，生成一个全新技术栈的实现”。
 
-在这个过程中，AI Agent 扮演了多个“编译器”的角色： 
-1. 需求编译器：将你用自然语言描述的模糊想法，“编译”成一份结构化的、无歧义的需求规范（spec.md）。 
+在这个过程中，AI Agent 可以比喻为多个“编译器”的角色，但自然语言生成并不是确定性的编译： 
+1. 需求编译器：将你用自然语言描述的模糊想法，“编译”成一份结构化的需求规范（spec.md），再由人确认歧义与边界条件。 
 2. 方案编译器：将需求规范与你的技术约束（如使用 Go 语言）相结合，“编译”成一份详尽的技术实现蓝图（plan.md）。 
 3. 任务编译器：将技术蓝图，“编译”成一份带依赖关系的、原子化的任务指令集（tasks.md）。 
 4. 代码编译器（生成器）：最终，它根据任务指令集，生成最终的可执行代码。
@@ -57,11 +57,14 @@ Autonomous Execution
 - But if the bug is due to problem of requirement, it is necessary to update the specs
 
 
-## Why SDD is the Future
-- Solve "vagueness" problem, AI don't do guessing according to prompt
-- Accelerate iteration - just have to modify specs and regenerate code instead of changing code
-- Parallel execution - as `tasks.md` define dependency, allow parallelism
-- Specs become living docs
+## Benefits and Limits
+- Structured specifications can reduce ambiguity, but they do not eliminate guessing or interpretation errors.
+- Updating a specification helps align implementation changes; regeneration still requires review, integration, and regression tests.
+- Explicit dependencies can support parallel execution when tasks and file ownership are actually independent.
+- Specifications become living documentation only if maintained alongside the implementation.
+- Use [[AI Project Constitutions]] for governing constraints and [[Context Engineering for AI Coding Assistants]] for repository working instructions.
+- Acceptance criteria, human review, and executable tests determine whether generated code meets the intended behavior.
 
 
 # References
+[[2 - Source Materials/Course/AI原生开发工作流实战/5 Specs Driven Development|5 Specs Driven Development]]

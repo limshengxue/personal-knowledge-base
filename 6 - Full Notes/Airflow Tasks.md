@@ -13,12 +13,10 @@ Tags: [[pipeline]] [[airflow]]
 - Are not required for a given workflow, but usually present
 - When not given, Airflow auto-decide with no guarantee in order of execution
 - Are referred to as upstream or downstream tasks
-- Defined using bit-shift operator
-	- `>>` - upstream
-	- `<<` - downstream
+- Define edges using bit-shift operators: `task_1 >> task_2` means task_1 is upstream and task_2 is downstream. `task_2 << task_1` expresses the same edge.
 - Upstream = before
 - Downstream = after
-- `task_1 >> task_2` -  execute and complete `task1` before executing `task2`
+- With the default `all_success` trigger rule, `task_2` waits for successful upstream completion. Other trigger rules can change that requirement.
 - Throw error when cycle is detected
 - Easily visualize in graph view of [[Airflow Web Interface]]
 

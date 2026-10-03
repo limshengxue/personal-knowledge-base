@@ -55,7 +55,7 @@ INSERT INTO uk_prices_1
 - Most select syntax in SQL works
 - But
 	- We need to ask different questions that we do with an OLTP
-	- We should take advantage of the smart functions in ClickHouse (there are over 1500 custom functions)
+	- Choose functions suited to the workload; the available catalog depends on the installed version.
 
 ### Format Output
 - We can control the output format
@@ -66,35 +66,14 @@ SELECT name, age FROM users FORMAT TabSeparated;
 ### CTE
 - Common Table Expression can be used for identifier or result set
 - ![[Attachments/Pasted image 20251122112705.png]]
-### ClickHouse Functions
-- There are 4 categories of ClickHouse function
-- Regular - apply to each row separately like `lower`
-- Aggregate - compute based on multiple rows like `quantile`
-- Table - for creating table like `url`
-- Window - window functions like standard SQL
+## Function Reference
+Use [[ClickHouse Function Categories]] for scalar, aggregate, table, window, and user-defined functions.
 
-We can check using `SELECT * system.functions`
-
-#### Regular Functions
-- apply to each row separately like `lower`
-	- Arithmetic functions
-	- Date and time functions
-	- Array functions
-	- String functions - fuzzy match, haystack search string
-
-#### Aggregate Function
-- Statistical function
-- Exact vs approximation - for example `quantile` and `quantileExact`, `uniq`and `uniqExact` - the one without exact is approximation (faster)
-- Count most frequent - `topK`
-- Aggregate function combinators
-	- Eg. *If* like`sumIf` which sum based on defined condition
-- `any` functions used to include columns that are not in `group by` clause
-- `arg` find not any value but specific condition like maximum `argMax`
-- return the street that is most expensive in the town`SELECT town, argMax(street,price) FROM uk_price_paid GROUP BY town`
-
-#### User defined functions
-- `CREATE FUNCTION mergePostcode AS (p1, p2) -> concat(p1, p2)`
-
+## Example Schema Boundary
+- The S3 example illustrates a staging schema, not a recommended final price representation.
+- A string price compares lexicographically; cast or validate it into an appropriate numeric type before numeric ranking or aggregation.
+- Confirm inferred source columns and their order before using `INSERT ... SELECT *`.
+- See [[6 - Full Notes/ClickHouse Data Types|ClickHouse Data Types]] and [[ClickHouse Table Engine and Parts]] when defining the destination.
 
 # References
 [[2 - Basics Query]]

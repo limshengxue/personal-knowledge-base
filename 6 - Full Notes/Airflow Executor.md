@@ -3,33 +3,26 @@
 Tags: [[airflow]] [[pipeline]] [[3 - Tags/kubernetes]] [[runner]]
 
 # Airflow Executor
-- Executors run tasks
-- Different executors handle running the tasks differently
-- Can be determined from `airflow.cfg`, the line with "executor="
-	- Can check using the command `cat airflow/airflow.cfg | grep "executor = "`
-- Can also use `airflow info`
-- Poorly configured executor can resulted in DAG unable to run on schedule
-	- Lack of resources
-	- Blocking task slot (using Sequential together with blocking  [[Airflow Sensors]])
+- An executor determines how runnable [[Airflow Tasks]] are executed after [[Airflow Scheduler]] queues them.
+- Inspect the configured executor with `airflow config get-value core executor` or `airflow info`.
+- Insufficient execution capacity and blocking [[Airflow Sensors]] can delay a workflow.
 
-## Sequential Executors
-- The default executor for Airflow
-- Runs one task at a time
-- Useful for debugging
-- Not recommended for production
+## LocalExecutor
+- Runs task processes on the local execution host.
+- Concurrency is constrained by Airflow configuration and available host resources.
+- It is the default executor in Airflow 3, not a promise that every deployment uses it.
 
-## Local Executor
-- Runs on a single system
-- Treat tasks as processes
-- Parallelism: Start tasks concurrently as many as possible or as defined by the user
-- Can utilize all resources of a given host system
+## KubernetesExecutor
+- Launches an individual [[Kubernetes Pod]] for each task instance.
+- It does not require a separate complete Airflow system per task.
+- Requires compatible provider configuration, cluster credentials, pod configuration, and access to task code.
+- Pod startup and scheduling affect latency.
 
-## Kubernetes Executor
-- Multiple Airflow systems as workers
-- Kubernetes as task manager
-- More difficult to setup and configure
-
+## Legacy SequentialExecutor
+- Older Airflow releases included an executor running one task at a time.
+- Airflow 3 removes SequentialExecutor; use the executor supported by the installed release.
 
 # References
 [[7 - Airflow Executors]]
 [[8 - Common Troubleshooting]]
+[Airflow 3 migration](https://airflow.apache.org/docs/apache-airflow/3.1.7/installation/upgrading_to_airflow3.html)

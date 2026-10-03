@@ -10,14 +10,14 @@ Partitioning data improves query performance
 	- For data management
 	- Improve performance of mutations, moving data around, retention policies
 - Partition must be careful
-	- When > 1000 parts, ClickHouse service stop letting you insert (max partition per insert)
+	- `max_partitions_per_insert_block` limits partitions in one inserted block. Active-part limits such as `parts_to_throw_insert` govern a different condition; neither is a universal 1,000-part rule.
 - Partition with low cardinality value
 
 ![[Attachments/Pasted image 20251115113935.png]]
 
 ## Partition affects Insert and Merge
 - When no partition, each *insert* create a part
-- When we define partition, each *insert* create multiple parts
+- An insert spanning several partitions can create separate parts for those partitions; an insert touching one partition need not create several parts.
 - When no partition, merge only limit by size (can potential merge into only 1 part)
 - When partition was defined, merge limit by partition also
 [[ClickHouse Table Engine and Parts]]
@@ -28,4 +28,5 @@ Partitioning data improves query performance
 
 
 # References
-[[6 - Full Notes/ClickHouse Partition|ClickHouse Partition]]
+[[2 - Source Materials/Course/Clickhouse Level 2/ClickHouse Partition|ClickHouse Partition]]
+[Partitions per insert](https://clickhouse.com/docs/reference/settings/session-settings/max-partitions)

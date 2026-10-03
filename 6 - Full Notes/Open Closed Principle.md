@@ -44,6 +44,7 @@ class Alert {
 
 - Implement a new rule in a `TimeoutAlertHandler` and register it during application setup.
 - The dispatch loop and existing handlers remain unchanged.
+- Calling each handler through its interface uses [[Polymorphism]] to select the implementation at runtime.
 - Delegating through the interface applies [[Composition over Inheritance]]. Each handler owns a focused rule, supporting the [[Single Responsibility Principle]].
 
 ## What Still Changes

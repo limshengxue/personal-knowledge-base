@@ -3,9 +3,9 @@
 Tags: [[linux]] [[shell]]
 
 # Linux Shell - Navigating in File System
-- `ls <argument> <options>` - list files in directory
-	- Common options `-latch` 
-		- Long list, show all file, sorted by time, in reversed, with human-readable file size
+- `ls [options] [path]` - list directory entries.
+	- `ls -lath` gives a long listing including hidden entries, sorted newest modification time first, with human-readable sizes.
+	- Add `-r` to reverse the order. `-c` selects inode status-change time rather than modification time; `-latch` alone does not reverse sorting.
 - `cd` - change directory
 - `pwd` - print working directory
 - `touch` - create a file (if didn't existed), update the timestamp if existed
@@ -29,3 +29,4 @@ Tags: [[linux]] [[shell]]
 
 # References
 [[Become a shell wizard in ~12 mins]]
+[GNU ls options](https://www.gnu.org/software/coreutils/manual/html_node/ls-invocation.html)

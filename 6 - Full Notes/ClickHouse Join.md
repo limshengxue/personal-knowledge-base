@@ -3,7 +3,7 @@
 Tags: [[clickhouse]] [[database]] [[olap]]
 
 # ClickHouse Join
-- Best practice is to place the *smaller* table on the *right*, as the table on the right map into memory
+- Hash joins build on one input, so its size matters. Since 24.12 the planner can automatically place the smaller table on the right for supported joins; inspect the actual plan rather than relying only on manual table order.
 
 ## Join Algorithms
 - ClickHouse join algorithms help to ensure maximum utilization of resources
@@ -21,7 +21,7 @@ Tags: [[clickhouse]] [[database]] [[olap]]
 - The data in the right-hand table is streamed (in parallel) into memory
 - The data in the left-hand table is streamed and joined by doing lookups into hash table
 - NOTE:
-	- The right hand table must be able to fit into memory or we will get error
+	- In-memory hash implementations are limited by available/configured memory. `grace_hash` can spill partitions to disk; the fit-in-RAM rule is not universal.
 	- But the *latest* version of ClickHouse will auto adjust according to table size
 
 ## Sort Merge
@@ -39,8 +39,8 @@ Tags: [[clickhouse]] [[database]] [[olap]]
 
 ### Dictionaries
 - Mapping of key values
-- Stored in memory
-- Updated periodically
+- Storage depends on dictionary layout; not every dictionary is wholly in memory.
+- Refresh behavior depends on source, layout, and lifetime configuration.
 - Benefits
 	- Easy and efficient to use
 	- Efficient alternative to joining 2 table
@@ -62,3 +62,5 @@ Tags: [[clickhouse]] [[database]] [[olap]]
 
 
 # References
+[[2 - Source Materials/Course/Clickhouse Level 2/ClickHouse Join|ClickHouse Join]]
+[Join planning and algorithms](https://clickhouse.com/docs/concepts/best-practices/minimize-optimize-joins)

@@ -1,6 +1,6 @@
 2026-03-15 15:59
 
-Tags: [[redis]]
+Tags: [[3 - Tags/redis|redis]]
 
 # Redis Data Structures
 ## Lists
@@ -104,6 +104,11 @@ A set where each member is associated with a score
 ### Vectors
 - Since strings are binary-safe, we can do vector search on them
 - We can do RAG using hashes
+
+## Choosing a Structure
+- Start with [[Redis Key and Value]] for keys, binary-safe strings, and expiry.
+- JSON commands, search indexes, and vector features require a Redis version/product exposing those capabilities; binary-safe storage alone does not create a vector index.
+- Redis lists can implement simple queues, but reliable delivery needs additional handling for acknowledgements and failures.
 
 # References
 [[Build With Lists]]

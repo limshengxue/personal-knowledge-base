@@ -3,75 +3,63 @@
 Tags: [[airflow]] [[pipeline]]
 
 # Airflow Operators
-- Represent a single task in a workflow
-- Run independently
-- Generally do not share information
+Operators define reusable task behavior; instantiating one inside a [[Airflow DAG]] creates a task. Tasks may execute on different workers, so do not rely on local files or in-process variables to share data. Use small XCom values or external storage deliberately.
 
-## Bash Operator
-- Executes a given Bash command or script
-- Runs the command in a temporary directory
-- Can specify environment variables
+## Bash and Python Tasks
+This Airflow 3 example requires the standard provider. The Python function receives arguments through `op_kwargs`.
 
 ```python
-# Import the BashOperator
-from airflow.operators.bash import BashOperator
+import time
 
-with DAG(dag_id="test_dag", default_args={"start_date": "2024-01-01"}) as analytics_dag:
-  # Define the BashOperator 
-  cleanup = BashOperator(
-      task_id='cleanup_task',
-      # Define the bash_command
-      bash_command='cleanup.sh',
-  )
+import pendulum
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.python import PythonOperator
+
+
+def pause(length_of_time: int) -> None:
+    time.sleep(length_of_time)
+
+
+with DAG(
+    dag_id="operator_examples",
+    start_date=pendulum.datetime(2026, 1, 1, tz="UTC"),
+    schedule=None,
+    catchup=False,
+) as dag:
+    greeting = BashOperator(
+        task_id="greeting",
+        bash_command="echo 'Hello from Bash'",
+    )
+    wait_task = PythonOperator(
+        task_id="pause",
+        python_callable=pause,
+        op_kwargs={"length_of_time": 5},
+    )
+    greeting >> wait_task
 ```
 
-## Python Operator
-- Executes a Python function / callable
-- Operates like Bash Operator with more option
+BashOperator uses a temporary working directory when no `cwd` is supplied. A referenced script must be available in the execution environment; the example uses an inline command instead.
+
+## Email Tasks
+Install the SMTP provider and configure its connection before using EmailOperator. This fragment belongs inside a DAG and requires the attachment to exist on the executing worker:
+
 ```python
-from airflow.operators.python import PythonOperator
-
-def printme():
-	print("Hello World")
-	
-python_task = PythonOperator(
-	task_id = 'simple_print', 
-	python_callable = printme
-)
-```
-
-Passing arguments using `op_kwargs`
-```python
-def sleep(length_of_time):
-	time.sleep(length_of_time)
-
-sleep_task = PythonOperator(
-	task_id = 'sleep',
-	python_callable = sleep,
-	op_kwargs = {'length_of_time' : 5}
-)
-```
-
-## Email Operator
-- Need configuration of email server before using
-```python
-from airflow.operators.email import EmailOperator
+from airflow.providers.smtp.operators.smtp import EmailOperator
 
 email_task = EmailOperator(
-	task_id = 'email_sales_report',
-	to = 'sales_manager@example.com',
-	subject = 'Automated Sales Report',
-	html_content = 'test email',
-	files = 'latest_sales.xlsx'
+    task_id="email_sales_report",
+    conn_id="smtp_default",
+    to="sales_manager@example.com",
+    subject="Automated Sales Report",
+    html_content="The report is attached.",
+    files=["latest_sales.xlsx"],
 )
 ```
 
-
-## Operators Common Problem
-- Not guaranteed to run in same location/environment
-- May require extensive use of Environment variables
-- Can be difficult to run tasks with elevated privileges
-
+Airflow 2 examples commonly use `airflow.operators.bash` and `airflow.operators.python`; current standard-provider imports are different. See [[Airflow Tasks]] for dependencies, [[Airflow Sensors]] for waiting, and [[Airflow Executor]] for execution placement.
 
 # References
 [[4 - Airflow Operators and Tasks]]
+[Standard provider operators](https://airflow.apache.org/docs/apache-airflow-providers-standard/stable/operators/index.html)
+[SMTP EmailOperator](https://airflow.apache.org/docs/apache-airflow-providers-smtp/stable/_api/airflow/providers/smtp/operators/smtp/index.html)

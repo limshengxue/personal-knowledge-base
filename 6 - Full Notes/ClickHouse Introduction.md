@@ -5,7 +5,7 @@ Tags: [[database]] [[olap]] [[3 - Tags/clickhouse|clickhouse]]
 # ClickHouse
 - ClickHouse started as Clickstream data warehouse
 - OLAP (Online Analytical Processing)
-	- Strictly for analysis, *not transaction*, no idea of transaction as oppose to OLTP
+	- Designed for analytical workloads rather than general OLTP. Atomic insert guarantees and limited transaction support exist under documented conditions.
 - Database management system
 - Open source under Apache License
 
@@ -15,7 +15,7 @@ Tags: [[database]] [[olap]] [[3 - Tags/clickhouse|clickhouse]]
 - Fast ingestion
 	- Millions of rows per second
 - Fast query execution
-	- Typically 1000x faster than OLTP
+	- Performance depends on workload, schema, hardware, and baseline; a universal 1000x comparison is not established.
 - Used for analytical workloads
 
 ### Column-Oriented
@@ -40,5 +40,11 @@ Tags: [[database]] [[olap]] [[3 - Tags/clickhouse|clickhouse]]
 The default database engine is Atomic, unless you are using ClickHouse Cloud in which case the default database engine is Replicated.
 
 
+## Storage and Query Model
+- [[ClickHouse Table Engine and Parts]] explains MergeTree storage and merges.
+- [[ClickHouse Granule and Primary Key]] explains sorting and sparse indexes.
+- [[ClickHouse Querying]] covers ingestion and query examples.
+
 # References
 [[1 - What is ClickHouse]]
+[Transactional conditions](https://clickhouse.com/docs/concepts/features/operations/insert/transactions)

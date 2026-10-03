@@ -23,7 +23,7 @@ Tags: [[data streaming]]
 	- Messages are naturally schema-less
 
 ### Log vs Queue
-- Logs can read repetitively. But event can only be consumed once.
+- Events in a retained log can be consumed repeatedly. Consuming a Kafka event does not delete it; retention and compaction policies control storage.
 
 ### Features of Log
 - Log retention:
@@ -34,3 +34,4 @@ Tags: [[data streaming]]
 
 # References
 [[1 - Introduction, Topics, Messages]]
+[Kafka event retention](https://kafka.apache.org/42/getting-started/introduction/)

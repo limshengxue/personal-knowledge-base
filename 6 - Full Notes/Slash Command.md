@@ -19,8 +19,8 @@ Tags: [[agentic ai]]
 ### Project and Cooperation
 - `/init` - generate a CLAUDE.md
 - `/memory` - quick edit CLAUDE.md
-- `/review` - review code
-- `/pr-comments` - get all comments of current related PR
+- `/code-review` - current bundled code-review skill; `/review` appears in older course material.
+- `/pr-comments` - removed in v2.1.91; ask Claude to inspect PR comments using the GitHub CLI instead.
 
 ### Metadata
 - `/help`
@@ -79,7 +79,7 @@ Utilising shell commands
 ```
 ---
 description: 根据当前暂存区的代码变更，生成一条符合Conventional Commits规范的Commit Message。
-allowed-tools: Bash(git add:*)
+allowed-tools: Bash(git branch --show-current), Bash(git diff --staged)
 ---
 
 你是一位Git专家。请根据以下代码变更的diff信息，为我生成一条符合Conventional Commits规范的、高质量的`git commit`消息。
@@ -96,4 +96,14 @@ allowed-tools: Bash(git add:*)
 
 
 
+## Current Claude Code Scope
+The command list above describes Claude Code, not every coding agent. Check `/help` and the installed version; current bundled review functionality is `/code-review`, rather than assuming the historical `/review` command remains available.
+
+Custom commands and [[Agent Skills]] now share an implementation: `.claude/commands/deploy.md` and `.claude/skills/deploy/SKILL.md` can both expose `/deploy`. Invocation controls determine whether a skill is user-invoked, agent-invoked, or both.
+
+Command frontmatter and shell expansion are host features. Set `allowed-tools` to the operations actually needed; a command that only reads `git diff --staged` should not request `git add`. Confirm authorization before publishing, pushing, or creating a PR.
+
 # References
+[[2 - Source Materials/Course/AI原生开发工作流实战/10 Slash Command|10 Slash Command]]
+[Current commands](https://code.claude.com/docs/en/commands)
+[Custom commands and skills](https://code.claude.com/docs/en/skills)

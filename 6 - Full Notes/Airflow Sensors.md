@@ -7,7 +7,7 @@ Tags: [[airflow]] [[pipeline]]
 	- Eg. creation of a file, upload of a database record
 - Can define how often to check for the condition
 - Are assigned to tasks
-- Derived from `airflow.sensors.base_sensor_operator`
+- Use the sensor base class and concrete provider supported by the installed release; old `base_sensor_operator` imports are legacy.
 - Sensor arguments:
 - mode - How to check for the condition
 	- poke - run repeatedly (default)
@@ -18,7 +18,7 @@ Tags: [[airflow]] [[pipeline]]
 ## File Sensor
 - Check for existence of a file
 ```python
-from airflow.sensors.filesystem import FileSensor
+from airflow.providers.standard.sensors.filesystem import FileSensor
 
 file_sensor_task = FileSensor(task_id = 'file_sense',  filepath = 'sales_data.csv', poke_interval = 300)
 ```
@@ -33,6 +33,12 @@ file_sensor_task = FileSensor(task_id = 'file_sense',  filepath = 'sales_data.cs
 - Check for a condition continuously instead of failing the DAG
 - Add task repetition without loops
 
+
+## Version and Capacity
+- The FileSensor import above targets the standard provider used with Airflow 3.
+- `poke` occupies a worker slot while waiting; `reschedule` releases it between checks.
+- Deferrable sensors can use a triggerer when the provider and deployment support them; this is different from reschedule mode.
+- Provider names include `SqlSensor`, not universally `SQLSensor`.
 
 # References
 [[6 - Airflow Sensor]]

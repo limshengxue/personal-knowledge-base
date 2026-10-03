@@ -63,5 +63,7 @@ abstract class NamedEntity implements Named {
 - Keep contracts focused on consumer needs. Adding a type solely to mirror one implementation's details provides little isolation.
 - Weigh the benefits against the extra types and relationships introduced; a simple concrete class can be sufficient.
 
+A contract exposes an [[Abstraction]] and enables [[Polymorphism]] across implementations. Apply [[Interface Segregation Principle]] to keep contracts consumer-focused; consider [[Composition over Inheritance]] before introducing a shared base class.
+
 # References
 [[2 - Source Materials/Course/设计模式之美/4 - Interface vs Abstract|4 - Interface vs Abstract]]

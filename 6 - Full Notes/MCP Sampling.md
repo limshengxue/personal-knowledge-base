@@ -18,86 +18,93 @@ Initiating Sampling at the Server
 @mcp.tool()
 
 async def summarize(text_to_summarize: str, ctx: Context):
-    prompt = f"""
-        Please summarize the following text:
-        {text_to_summarize}
-    """
+    prompt = f"""
+        Please summarize the following text:
+        {text_to_summarize}
+    """
 
-    result = await ctx.session.create_message(
-        messages=[
-            SamplingMessage(
-                role="user", content=TextContent(type="text", text=prompt)
-            )
-        ],
-        max_tokens=4000,
-        system_prompt="You are a helpful research assistant.",
-    )
+    result = await ctx.session.create_message(
+        messages=[
+            SamplingMessage(
+                role="user", content=TextContent(type="text", text=prompt)
+            )
+        ],
+        max_tokens=4000,
+        system_prompt="You are a helpful research assistant.",
+    )
 
-    if result.content.type == "text":
-        return result.content.text
-    else:
-        raise ValueError("Sampling failed")
+    if result.content.type == "text":
+        return result.content.text
+    else:
+        raise ValueError("Sampling failed")
 ```
 
 
 Adding a callback method to handle the sampling message at the client
 ```python
 async def sampling_callback(
-    context: RequestContext, params: CreateMessageRequestParams
+    context: RequestContext, params: CreateMessageRequestParams
 ):
 
-    # Call Claude using the Anthropic SDK
-    text = await chat(params.messages)
+    # Call Claude using the Anthropic SDK
+    text = await chat(params.messages)
 
-    return CreateMessageResult(
-        role="assistant",
-        model=model,
-   content=TextContent(type="text", text=text),
+    return CreateMessageResult(
+        role="assistant",
+        model=model,
+        content=TextContent(type="text", text=text),
 
-    )
+    )
 ```
 
 Connect the Callback to ClientSession
 ```python
 async def run():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(
-            read, write, sampling_callback=sampling_callback
-        ) as session:
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(
+            read, write, sampling_callback=sampling_callback
+        ) as session:
 
-            await session.initialize()
+            await session.initialize()
 
-            result = await session.call_tool(
-                name="summarize",
-                arguments={"text_to_summarize": "lots of text"},
-            )
-            print(result.content)
+            result = await session.call_tool(
+                name="summarize",
+                arguments={"text_to_summarize": "lots of text"},
+            )
+            print(result.content)
 ```
 
-Might need formatting to ensure the MCP message is compatible with the LLM SDK
+A message-formatting fragment may be needed before calling a model SDK. This is not a complete LLM adapter: imports, the actual model call, and returning its response must be supplied by the application.
 ```python
 async def chat(input_messages: list[SamplingMessage], max_tokens=4000):
-    messages = []
-    for msg in input_messages:
-        if msg.role == "user" and msg.content.type == "text":
-            content = (
-                msg.content.text
-                if hasattr(msg.content, "text")
-                else str(msg.content)
-            )
+    messages = []
+    for msg in input_messages:
+        if msg.role == "user" and msg.content.type == "text":
+            content = (
+                msg.content.text
+                if hasattr(msg.content, "text")
+                else str(msg.content)
+            )
 
-          messages.append({"role": "user", "content": content})
+            messages.append({"role": "user", "content": content})
 
-        elif msg.role == "assistant" and msg.content.type == "text":
-            content = (
-                msg.content.text
-                if hasattr(msg.content, "text")
-                else str(msg.content)
-            )
-           messages.append({"role": "assistant", "content": content})
+        elif msg.role == "assistant" and msg.content.type == "text":
+            content = (
+                msg.content.text
+                if hasattr(msg.content, "text")
+                else str(msg.content)
+            )
+            messages.append({"role": "assistant", "content": content})
 ```
 
 
+
+## Version and Consent
+- The session/callback fragments above illustrate the legacy 2025-era protocol and SDK interfaces, not a universal current API.
+- Current revision 2026-07-28 uses a multi-round-trip flow; consult the installed SDK's resolver and compatibility documentation.
+- The host can decline sampling and should control transmitted context, model use, and external costs.
+- Client capability support must be checked before requesting sampling.
 
 # References
 [[1 - Sampling]]
+[SDK sampling and legacy compatibility](https://py.sdk.modelcontextprotocol.io/v2/handlers/sampling-and-roots/)

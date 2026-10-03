@@ -25,3 +25,4 @@ Tags: [[agentic ai]]
 
 
 # References
+[[2 - Source Materials/Course/AI原生开发工作流实战/18 - AI Cooperative Framework|18 - AI Cooperative Framework]]

@@ -14,50 +14,53 @@ Tool Call use the Context argument to log and update progress
 ```python
 @mcp.tool()
 async def add(a: int, b: int, ctx: Context) -> int:
-    await ctx.info("Preparing to add...")
-    await ctx.report_progress(20, 100)
+    await ctx.info("Preparing to add...")
+    await ctx.report_progress(20, 100)
 
   
-    await asyncio.sleep(2)
+    await asyncio.sleep(2)
 
-    await ctx.info("OK, adding...")
-    await ctx.report_progress(80, 100)
+    await ctx.info("OK, adding...")
+    await ctx.report_progress(80, 100)
 
-    return a + b
+    return a + b
 ```
 
 Client define the callbacks to handle the logging and progress update from server
 ```python
 async def logging_callback(params: LoggingMessageNotificationParams):
-    print(params.data)
+    print(params.data)
 
   
 async def print_progress_callback(
-    progress: float, total: float | None, message: str | None
+    progress: float, total: float | None, message: str | None
 ):
-    if total is not None:
-        percentage = (progress / total) * 100
-        print(f"Progress: {progress}/{total} ({percentage:.1f}%)")
-    else:
-        print(f"Progress: {progress}")
+    if total is not None:
+        percentage = (progress / total) * 100
+        print(f"Progress: {progress}/{total} ({percentage:.1f}%)")
+    else:
+        print(f"Progress: {progress}")
 
   
 async def run():
-    async with stdio_client(server_params) as (read, write):
-        async with ClientSession(
-            read, write, logging_callback=logging_callback
-        ) as session:
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(
+            read, write, logging_callback=logging_callback
+        ) as session:
 
-            await session.initialize()
+            await session.initialize()
 
-            await session.call_tool(
-                name="add",
-                arguments={"a": 1, "b": 3},
-                progress_callback=print_progress_callback,
-            )
+            await session.call_tool(
+                name="add",
+                arguments={"a": 1, "b": 3},
+                progress_callback=print_progress_callback,
+            )
 ```
 
 
+
+## SDK Version Scope
+The code fragments illustrate the source's 2025-era Python SDK interface. Check installed SDK types and callback signatures before reuse; protocol revision and SDK version are separate choices.
 
 # References
 [[2 - Logging and Notification]]

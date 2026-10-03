@@ -9,8 +9,7 @@ Tags: [[kubernetes]]
 	- The nodes where the applications are deploy
 	- Application resource consumptions
 	- Policies attached to the application (like restart, upgrade, fault tolerance)
-- For each object, we declare desired state in `spec`
-- Where `status` record the actual state
+- Many objects expose desired state in `spec` and observed state in `status`; this is not universal. For example, ConfigMaps and Secrets hold configuration in data fields.
 - The object definition manifest include `apiVersion` and `kind`
 - We often use YAML to define, which convert by kubectl to JSON and sent to the API server
 
@@ -19,8 +18,14 @@ Tags: [[kubernetes]]
 - Used to organize and select a subset of objects
 - We select label using label selectors
 	- Equality-based
-	- Set-based operator like `in`, `notin` for values and `exist` `notexist` for keys
+	- Set-based expressions use `In`, `NotIn`, `Exists`, and `DoesNotExist` in structured selectors; command-line selector syntax uses forms such as `key in (value)` or `!key`.
 
+
+## Annotations
+- Annotations attach non-identifying metadata to objects.
+- They can carry tool/controller configuration or descriptions.
+- Unlike labels, annotations are not used by standard label selectors to select objects.
+- A specific annotation's effect depends on the component reading it.
 
 # References
 [[8 - Kubernetes Object Model]]

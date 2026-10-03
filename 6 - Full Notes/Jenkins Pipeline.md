@@ -3,7 +3,7 @@
 Tags: [[jenkins]] [[ci cd]] [[pipeline]]
 
 # Jenkins Pipeline
-- Defined using `JenkinsFile` in ruby syntax
+- Defined in a `Jenkinsfile` using Groovy-based Declarative or Scripted Pipeline syntax.
 - Broken down tasks into stage
 - Example: Clone > Build > Test > Package > Deploy
 - Pipeline and "Job" are similar concept in Jenkins
@@ -16,3 +16,4 @@ Tags: [[jenkins]] [[ci cd]] [[pipeline]]
 
 # References
 [[Jenkins Introduction]]
+[Pipeline syntax](https://www.jenkins.io/doc/book/pipeline/syntax/)
