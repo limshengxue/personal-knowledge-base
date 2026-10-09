@@ -18,6 +18,12 @@ Agentic AI combines language models with tools, context, planning, execution, an
 - [[Slash Command]]
 - [[Agent Checkpointing and Recovery]]
 
+## Verification and Harness Improvement
+
+- [[Verification Is All You Need - AI Coding Agent Validation]]
+- [[Fix the Factory, Not Just the Product - Improving the Coding Agent Harness]]
+- [[Git Worktrees for Parallel AI Development]]
+
 ## Orchestration
 
 - [[Subagents]]
