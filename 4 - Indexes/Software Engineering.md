@@ -8,3 +8,4 @@ Software engineering turns requirements into maintainable applications through d
 - [[3 - Tags/fastapi|fastapi]] — Python API development, typing, dependencies, and request handling.
 - [[3 - Tags/concurrency|concurrency]] — Coordinating tasks whose progress overlaps.
 - [[3 - Tags/parallelism|parallelism]] — Executing work simultaneously and distinguishing it from concurrency.
+- [[3 - Tags/git|git]] — Git workflows, worktrees, and parallel code development.
