@@ -1,8 +1,8 @@
-2026-10-10 07:53
+# Git Worktrees for Parallel AI Development
 
 Tags: [[3 - Tags/git|git]] [[3 - Tags/agentic ai|agentic ai]]
 
-# Git Worktrees for Parallel AI Development
+2026-10-10 07:53
 
 ## Core Idea
 
