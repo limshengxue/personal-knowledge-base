@@ -1,8 +1,8 @@
-2026-10-10 07:53
+# Verification Is All You Need - AI Coding Agent Validation
 
 Tags: [[3 - Tags/agentic ai|agentic ai]] [[3 - Tags/mcp|mcp]]
 
-# Verification Is All You Need - AI Coding Agent Validation
+2026-10-10 07:53
 
 ## Core Idea
 
