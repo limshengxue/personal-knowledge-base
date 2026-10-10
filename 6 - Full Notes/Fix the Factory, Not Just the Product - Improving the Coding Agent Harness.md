@@ -1,8 +1,8 @@
-2026-10-10 07:53
+# Fix the Factory, Not Just the Product - Improving the Coding Agent Harness
 
 Tags: [[3 - Tags/agentic ai|agentic ai]]
 
-# Fix the Factory, Not Just the Product - Improving the Coding Agent Harness
+2026-10-10 07:53
 
 ## Core Idea
 
