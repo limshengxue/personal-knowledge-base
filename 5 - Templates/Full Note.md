@@ -1,8 +1,8 @@
-{{date}} {{time}}
+# {{Title}}
 
 Tags:
 
-# {{Title}}
+{{date}} {{time}}
 
 
 
