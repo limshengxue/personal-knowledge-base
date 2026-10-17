@@ -8,13 +8,27 @@
         "type": "tabs",
         "children": [
           {
-            "id": "87f231cb63df5621",
+            "id": "0466188dd58f44f3",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "2 - Source Materials/Books/Design Data-Intensive Application/3.1 Data Models and Query Languages.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": true,
+                "backlinkOpts": {
+                  "collapseAll": false,
+                  "extraContext": false,
+                  "sortOrder": "alphabetical",
+                  "showSearch": false,
+                  "searchQuery": "",
+                  "backlinkCollapsed": false,
+                  "unlinkedCollapsed": true
+                }
+              },
+              "icon": "lucide-file",
+              "title": "3.1 Data Models and Query Languages"
             }
           }
         ]
@@ -86,7 +100,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 336.5
+    "width": 336.5,
+    "collapsed": true
   },
   "right": {
     "id": "accb76d41053fec8",
@@ -178,8 +193,32 @@
       "obsidian-weread-plugin:打开微信读书书架": false
     }
   },
-  "active": "86eacf32835d3e8e",
+  "active": "0466188dd58f44f3",
   "lastOpenFiles": [
+    "Attachments/Pasted image 20261017135551.png",
+    "Attachments/Pasted image 20261017133742.png",
+    "Attachments/Pasted image 20261017133534.png",
+    "2 - Source Materials/Books/Design Data-Intensive Application/3 - Storage and Retrieval.md",
+    "2 - Source Materials/Books/Design Data-Intensive Application/2.1 Non Functional Requirements.md",
+    "2 - Source Materials/Books/Design Data-Intensive Application/3.1 Data Models and Query Languages.md",
+    "2 - Source Materials/Books/Design Data-Intensive Application/1.2 - Trade Off In Data Systems Architecture.md",
+    "2 - Source Materials/WeRead/我们为什么要睡觉？.md",
+    "6 - Full Notes/Verification Is All You Need - AI Coding Agent Validation.md",
+    "6 - Full Notes/Git Worktrees for Parallel AI Development.md",
+    "6 - Full Notes/Fix the Factory, Not Just the Product - Improving the Coding Agent Harness.md",
+    "3 - Tags/git.md",
+    "2 - Source Materials/WeRead/纳瓦尔宝典.md",
+    "2 - Source Materials/Books/Design Data-Intensive Application/2 - Data Models and Query Languages.md",
+    "Attachments/Pasted image 20261004101116.png",
+    "6 - Full Notes/ClickHouse Delete and Update Data.md",
+    "6 - Full Notes/Context Engineering for AI Coding Assistants.md",
+    "6 - Full Notes/Airflow SLA.md",
+    "Attachments/Pasted image 20261004095700.png",
+    "6 - Full Notes/PostgreSQL Date Series and Gap Filling.md",
+    "纳瓦尔宝典.md",
+    "6 - Full Notes/ClickHouse Default and Computed Columns.md",
+    "5 - Templates/AI Raw Note.md",
+    "README.md",
     "2 - Source Materials/Social Media Posts/Andrej Karpathy - LLM Knowledge Bases.md",
     "2 - Source Materials/Social Media Posts",
     "4 - Indexes/Continuous Integration and Delivery.md",
@@ -187,37 +226,13 @@
     "4 - Indexes/Databases and Query Processing.md",
     "4 - Indexes/Data Engineering and Streaming.md",
     "4 - Indexes/Software Engineering.md",
-    "4 - Indexes/AI and Agentic Systems.md",
-    "6 - Full Notes/AI Project Constitutions.md",
-    "6 - Full Notes/Kubernetes Client Certificate Access.md",
-    "6 - Full Notes/Kubernetes Secrets.md",
-    "6 - Full Notes/Kubernetes DaemonSets.md",
-    "6 - Full Notes/Kubernetes Service Mesh.md",
-    "6 - Full Notes/Helm Charts and Releases.md",
-    "6 - Full Notes/Kubernetes Observability.md",
-    "6 - Full Notes/Kubernetes Network Policies.md",
-    "6 - Full Notes/Kubernetes Pod Security.md",
-    "6 - Full Notes/Kubernetes Custom Resources and Controllers.md",
-    "6 - Full Notes/Kubernetes StatefulSets.md",
-    "6 - Full Notes/Kubernetes Jobs and CronJobs.md",
-    "6 - Full Notes/Kubernetes Autoscaling.md",
-    "6 - Full Notes/Kubernetes Resource Quotas and Limits.md",
     "2 - Source Materials/WeRead",
-    "3 - Tags/software architecture.md",
-    "6 - Full Notes/Flink Stream Processing.md",
-    "6 - Full Notes/ClickHouse Function Categories.md",
-    "6 - Full Notes/ClickHouse Default and Computed Columns.md",
-    "6 - Full Notes/Goal Focus and Taking Action.md",
     "Attachments/Pasted image 20261003132828.png",
     "Attachments/Pasted image 20260426094231.png",
     "Attachments/Pasted image 20260425104742.png",
     "Attachments/Pasted image 20260425103928.png",
     "Attachments/Pasted image 20260425093336.png",
     "Attachments/Pasted image 20260412121929.png",
-    "Attachments/Pasted image 20260412120739.png",
-    "Attachments/Pasted image 20260412115458.png",
-    "Attachments/Pasted image 20260412111221.png",
-    "Attachments/Pasted image 20260412105854.png",
     "Attachments",
     "2 - Source Materials/Course/设计模式之美",
     "2 - Source Materials/Course/AI原生开发工作流实战",
