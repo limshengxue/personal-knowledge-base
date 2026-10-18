@@ -1,6 +1,6 @@
 2025-06-05 08:23
 
-Tags: [[data streaming]]
+Tags: [[3 - Tags/data streaming|data streaming]]
 
 # Event Streaming and Log-Based Storage
 ## Event Streaming is about
@@ -30,6 +30,10 @@ Tags: [[data streaming]]
 	- Delete old data or trim by size
 - Log compaction
 	- Keep only latest value per key
+
+## Related Concepts
+- [[Event Sourcing]] uses a retained event log as the authoritative history of accepted state changes.
+- [[CQRS]] derives query-oriented representations from a write model.
 
 
 # References

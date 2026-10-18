@@ -32,6 +32,16 @@ Software architecture organizes responsibilities, dependencies, abstractions, an
 
 - [[Anemic vs Rich Domain Models]]
 
+## Data System Qualities
+
+- [[Reliability and Fault Tolerance]]
+- [[Scalability and Load]]
+- [[Response Time and Tail Latency]]
+- [[Overload and Retry Storms]]
+- [[Operability]]
+- [[Evolvability]]
+- [[Separation of Storage and Compute]]
+
 ## Framework Applications
 
 - [[FastAPI Dependency Injection]]
