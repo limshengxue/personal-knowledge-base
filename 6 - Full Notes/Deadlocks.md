@@ -3,33 +3,30 @@
 Tags: [[3 - Tags/concurrency|concurrency]] [[3 - Tags/database|database]]
 
 # Deadlocks
-多个事务互相等待对方持有的资源，形成无法自行前进的等待环。
+A deadlock occurs when transactions wait for resources held by one another, forming a cycle that prevents them from making progress on their own.
 
-### 例子：以相反顺序处理两件商品
+### Example: Processing Two Products in Opposite Orders
 
-1. 事务 A 锁住商品 X。
-2. 事务 B 锁住商品 Y。
-3. A 想修改 Y，但 Y 被 B 锁住，于是等待。
-4. B 想修改 X，但 X 被 A 锁住，也开始等待。
+1. Transaction A locks product X.
+2. Transaction B locks product Y.
+3. A tries to modify Y, but B holds its lock, so A waits.
+4. B tries to modify X, but A holds its lock, so B also waits.
 
-普通的 UPDATE 就可能取得行锁，不需要显式写 LOCK 才会产生死锁。
+Ordinary UPDATE statements can acquire row locks. Explicit LOCK statements are not required for a deadlock to occur.
 
-PostgreSQL 会检测死锁并中止其中一个事务，使另一个能够继续。不能依赖某个固定事务总是被选中中止。
+PostgreSQL detects deadlocks and aborts one transaction so that another can continue. Do not depend on a particular transaction always being selected as the victim.
 
-### 常见处理方式
+### Common Responses
+- Acquire locks in a consistent order, such as processing product IDs from smallest to largest, to avoid the opposite-order pattern above.
+- Keep transactions short; do not hold locks while waiting for user input or a slow external API.
+- Detect deadlock failures in the application. Where appropriate, use bounded retries that re-execute the entire transaction and its business decisions.
+- Make retries safe for external side effects; do not accidentally charge a customer twice or repeat another irreversible action.
 
-- 按统一顺序获取锁，例如始终按商品 ID 从小到大处理，避免上述反向获取模式。
-- 缩短事务，不要持锁等待用户输入或慢速外部 API。
-- 应用识别死锁失败，必要时进行有界重试，重新执行整个事务及其业务判断。
-- 重试必须考虑外部副作用，不能重复扣款或重复发出不可撤销的操作。
+### Difference from Race Conditions
+- **Race condition:** Interleaving produces an incorrect result.
+- **Deadlock:** Circular waiting prevents progress.
 
-### 与竞争条件的区别
-
-- **竞争条件：** 交错执行导致结果错误。
-- **死锁：** 相互等待导致事务无法继续。
-
-加锁可以解决某些竞争条件，但锁的获取顺序不当又可能引入死锁。单纯等待一个锁不等于死锁，关键是是否形成等待环。
-
+Locking can solve some race conditions, but inconsistent lock ordering can introduce deadlocks. Waiting for one lock is not automatically a deadlock; the critical feature is a cycle of waiting.
 
 ## Related Concepts
 - [[Race Conditions]]

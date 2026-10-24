@@ -3,49 +3,49 @@
 # Backend Fundamentals 01 - Transactions and Concurrency
 
 ## Headline
-事务保证一组操作的提交边界，不自动保证业务代码正确，也不自动消除竞争条件。
+A transaction provides a commit boundary for a group of operations. It does not automatically make business logic correct or eliminate race conditions.
 
 ## Summary
-这份课程笔记保存对竞争条件、死锁、数据库事务、ACID 和隔离级别的讲解要点。实现细节以 PostgreSQL 官方文档为依据；重点是分清原子性、业务不变量与并发隔离，避免把“支持事务”误当成“无需并发设计”。这里保存技术内容，不记录私人对话。
+This lesson covers race conditions, deadlocks, database transactions, ACID, and isolation levels. PostgreSQL-specific behavior is grounded in its official documentation. The central distinction is between atomicity, business invariants, and concurrency isolation: supporting transactions does not remove the need to design for concurrent requests. This source note preserves technical teaching material, not a private conversation transcript.
 
-## 抢最后一件商品
-- 库存为 1，A、B 都先读到 1，再分别写回固定值 0 并创建订单，会留下两笔订单。
-- 在 Read Committed 下，只加 BEGIN/COMMIT 不能消除这个竞争条件。
-- 针对单商品分配，可以执行“stock > 0 才 stock = stock - 1”的条件更新；检查确实更新一行后才创建订单。
-- 扣库存和创建订单应在同一事务内，避免订单失败但库存已经减少。
+## Selling the Last Item
+- With one item in stock, requests A and B can both read 1, each write the fixed value 0, and each create an order.
+- At Read Committed, adding BEGIN/COMMIT alone does not eliminate this race condition.
+- For a single-product allocation, use a conditional update that decrements stock only while stock > 0. Create an order only after confirming that exactly one row was updated.
+- Keep the stock decrement and order creation in the same transaction so that an order failure also rolls back the decrement.
 
-## 死锁与锁顺序
-- A 持有 X 等 Y，B 持有 Y 等 X，形成循环等待。
-- PostgreSQL 检测后会中止一个事务。应用需要处理失败，必要时安全地重试整个事务。
-- 按统一顺序获取锁并缩短事务，可以降低风险；普通等待不等于死锁。
+## Deadlocks and Lock Ordering
+- A holds X while waiting for Y; B holds Y while waiting for X. This creates a cycle of waiting.
+- PostgreSQL detects the deadlock and aborts one transaction. The application must handle the failure and, where safe, retry the entire transaction.
+- Consistent lock ordering and short transactions reduce risk. Ordinary lock waiting is not itself a deadlock.
 
-## ACID 的责任边界
-- A：整组执行或撤销，不留下只完成一半的修改。
-- C：事务前后的数据符合约束及业务不变量。
-- I：规定并发事务可以看到什么以及如何相互影响。
-- D：在配置的持久化保证下，已确认提交的结果在故障恢复后仍保留。
-- 反例：转账扣 20 却加 30，即使整体提交满足原子性，仍违反资金守恒。
-- 数据库执行已声明的约束，应用负责正确表达业务逻辑；数据库不会自动理解所有业务规则。
-- ACID 的 C 不等于副本同步或最终一致性，D 也不能代替备份。
+## The Responsibility Boundary of ACID
+- A: All database changes in the transaction take effect together or are rolled back together.
+- C: The state before and after the transaction satisfies constraints and business invariants.
+- I: Concurrent transactions have defined visibility and interference guarantees.
+- D: Acknowledged commits survive recovery within the configured durability guarantees.
+- Counterexample: debiting 20 but crediting 30 can be atomic while violating the rule that a transfer must conserve funds.
+- The database enforces declared constraints; the application must express correct business logic. The database does not automatically understand every business rule.
+- ACID consistency is not replica synchronization or eventual consistency, and durability does not replace backups.
 
-## PostgreSQL 隔离级别与重试
-- Read Uncommitted 实际按 Read Committed 执行。
-- Read Committed 的普通查询使用语句级已提交快照，同一事务两次查询可能不同。
-- Repeatable Read 使用稳定快照，但仍可能发生跨行的写偏斜，例如两个值班医生同时退出。
-- Serializable 要求成功事务的结果等价于某种串行顺序，不是强制物理上逐个执行。
-- 两个购买事务仍可能都读到 1，但不能都以不符合串行结果的方式成功提交。
-- 失败后应从头重试，包括重新读取和判断；不能只重发最后一条 SQL。
-- 数据库回滚不能撤销已经发生的外部扣款或邮件，重试需要考虑幂等性。
+## PostgreSQL Isolation and Retries
+- Read Uncommitted behaves as Read Committed.
+- Ordinary queries at Read Committed use statement-level committed snapshots, so two queries in one transaction can see different states.
+- Repeatable Read uses a stable snapshot but can still allow cross-row write skew, such as both on-call doctors going off duty.
+- Serializable requires successful transactions to have an outcome equivalent to some serial execution; it does not physically execute all transactions one at a time.
+- Two purchases may both read 1, but they cannot both commit an outcome that would be impossible under a valid serial execution.
+- Retry the entire transaction, including reads and decisions, rather than only the last SQL statement.
+- A database rollback cannot undo an external payment or an email that has already been sent. Retries must account for idempotency and external side effects.
 
 ## Key Ideas
-- [[Race Conditions]]：检查与行动之间的状态变化。
-- [[Deadlocks]]：锁形成的循环等待。
-- [[PostgreSQL Transactions and Isolation Levels]]：事务、ACID、隔离强度和重试边界。
-- 完整执行不等于正确执行，稳定读取不等于联合决策正确。
+- [[Race Conditions]]: State can change between checking a condition and acting on it.
+- [[Deadlocks]]: Locks can form a circular wait.
+- [[PostgreSQL Transactions and Isolation Levels]]: Transaction boundaries, ACID, isolation strength, and whole-transaction retries.
+- Complete execution is not necessarily correct execution; a stable view does not guarantee that concurrent decisions are jointly valid.
 
 ## Remarks
-- 这是技术教学的来源记录；可持续更新的理解已整合到以上 Full Notes。
-- 官方文档链接作为可核验依据，不将私人聊天链接发布到公开仓库。
+- This is a source record of technical teaching material. Reusable understanding is integrated into the linked Full Notes.
+- Official documentation provides verifiable references. Private chat links are not published in this public repository.
 
 Co-authored by ChatGPT
 

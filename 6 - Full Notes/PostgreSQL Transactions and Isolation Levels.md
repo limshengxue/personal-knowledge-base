@@ -5,162 +5,140 @@ Tags: [[3 - Tags/database|database]] [[3 - Tags/sql|sql]] [[3 - Tags/concurrency
 # PostgreSQL Transactions and Isolation Levels
 
 ## Core Idea
-- 事务把操作放在同一提交或回滚边界内，但不是自动覆盖全部请求的互斥锁。
-- 原子性确保不只执行一半；一致性要求结果保持约束与业务不变量。
-- 隔离级别控制并发交互，持久性关注配置保证下的提交结果保留。
-- [[Race Conditions]] 中的最后一件商品案例，展示了为什么只有事务仍可能超卖。
+- A transaction puts operations within one commit or rollback boundary; it is not a mutex covering every concurrent request.
+- Atomicity prevents partial execution. Consistency requires the resulting state to preserve constraints and business invariants.
+- Isolation controls concurrent interaction. Durability concerns retaining committed results under the configured guarantees.
+- The last-item example in [[Race Conditions]] shows why using transactions alone can still allow overselling.
 
-## Database Transactions：数据库事务
+## Database Transactions
+A transaction treats a group of database operations as one unit of work that commits or rolls back together.
 
-事务把一组数据库操作作为一个工作单元，一起提交或一起撤销。
+A purchase includes decrementing stock and creating an order. If the decrement succeeds but order creation fails, the database should not retain the half-finished state of reduced stock without an order.
 
-购买商品包含扣库存和创建订单。如果扣库存成功而创建订单失败，就不应留下“库存减少但没有订单”的半成品状态。
+- BEGIN: Start the transaction.
+- COMMIT: Commit the transaction.
+- ROLLBACK: Undo the transaction's uncommitted changes.
 
-- BEGIN：开始事务。
-- COMMIT：提交事务。
-- ROLLBACK：撤销尚未提交的事务修改。
+### Transaction Boundaries
+A database transaction does not mean that only one request can execute the surrounding code. Isolation levels, query design, and locking determine concurrent behavior.
 
-### 事务的边界
+Database transactions also generally do not cover external systems:
+- A database rollback does not retract an email that has already been sent.
+- A database rollback does not automatically refund a payment already charged by an external provider.
 
-数据库事务不等于“这段代码只有一个请求能执行”。并发行为由隔离级别、查询写法和锁等共同决定。
+External operations require additional idempotency, messaging, or compensation mechanisms. Database rollback is not a universal undo button.
 
-数据库事务通常也不覆盖外部系统：
+## ACID Properties
+ACID describes properties that correct, reliable transactions should satisfy. It should not be treated as four automatic, all-purpose features supplied entirely by the database.
 
-- 数据库回滚不会自动撤回已经发出的邮件。
-- 数据库回滚不会自动退回支付平台已经扣除的钱。
+### A — Atomicity
+All database operations in the transaction take effect together or are rolled back together.
 
-涉及外部操作时，需要额外的幂等、消息或补偿设计，不能把数据库回滚视为通用撤销按钮。
+It asks: **Did only part of the operation take effect?**
 
-## ACID Properties：事务的四项性质
+“Atomic” here does not mean that execution can never interleave with another transaction.
 
-ACID 描述正确、可靠事务应具备的性质，不应简单理解为数据库自动赠送的四个万能功能。
+### C — Consistency
+A transaction should move the data from a state that satisfies constraints and business invariants to another state that satisfies those rules.
 
-### A — Atomicity：原子性
+It asks: **Is the resulting state still valid?**
 
-事务内的数据库操作要么整体生效，要么整体撤销。
+#### Why Is This a Separate Property?
+Suppose accounts A and B each contain 100, for a total of 200. Incorrect transfer code:
+1. Debits 20 from A.
+2. Credits 30 to B.
 
-它回答的是：**有没有只做一半？**
+The database can commit both operations together, satisfying atomicity. However, the total becomes 210, violating the invariant that this transfer must not create or destroy funds.
 
-“原子”在这里并不意味着执行期间绝不与其他事务交错。
+**Complete execution of incorrect logic is still incorrect.** This distinguishes A from C.
 
-### C — Consistency：一致性
+#### Who Is Responsible for C?
+- The database enforces declared constraints, such as CHECK, UNIQUE, and FOREIGN KEY.
+- The application must express correct business logic and use concurrency controls that preserve its business rules.
+- The database does not automatically understand every rule in a requirements document or detect that a credit should have been 20 instead of 30.
 
-事务应把数据从符合约束和业务不变量的状态，带到另一个符合这些规则的状态。
+For example, -50 is a valid numeric value. A declared CHECK (balance >= 0) constraint rejects an update to that balance. Without such a constraint, a transaction does not somehow infer that negative balances are forbidden.
 
-它回答的是：**做完后，状态还合法吗？**
+Even CHECK (stock >= 0) does not prevent the overselling example from ending with stock = 0 and two orders. One valid field does not establish that the complete business state is valid.
 
-#### 为什么这还需要单独列为性质？
+ACID consistency concerns integrity and business invariants. **It is not replica synchronization or eventual consistency in distributed systems.**
 
-假设账户 A 和 B 各有 100 元，总额为 200 元。转账代码错误地执行：
+### I — Isolation
+Isolation defines what concurrent transactions can observe and how they may affect one another.
 
-1. A 扣除 20 元。
-2. B 增加 30 元。
+It asks: **How can another operation running concurrently affect mine?**
 
-数据库可以把这两步整体提交，因此满足原子性；但总额变成 210 元，违反了“这次转账不创造或销毁资金”的业务不变量。
+Isolation has different strengths. Starting a transaction does not automatically select the strongest level.
 
-**完整执行错误逻辑，仍然是错误。** 这就是 A 与 C 的区别。
+### D — Durability
+Once a transaction is acknowledged as committed, its result should remain after recovery from a failure.
 
-#### 谁负责保证 C？
+It asks: **Can an acknowledged result be lost?**
 
-- 数据库负责执行已声明的约束，例如 CHECK、UNIQUE 和 FOREIGN KEY。
-- 应用负责正确表达业务逻辑，并采用能维持业务规则的并发控制方式。
-- 数据库不会自动理解需求文档中的全部规则，也不会自动发现“应加 20，却写成加 30”。
+This guarantee depends on correct durability settings and reliable storage. It does not promise recovery after all storage is destroyed, and it does not replace backups.
 
-例如，余额减到 -50 在数值类型上完全合法。如果声明 CHECK (balance >= 0)，数据库就会拒绝该非法更新；如果没有这种约束，事务本身不会凭空知道“余额不能为负”。
+## Isolation Levels
+Isolation levels determine which concurrent changes transactions can observe and which anomalies the database prevents. The implementation details below refer to PostgreSQL.
 
-即使库存受 CHECK (stock >= 0) 保护，前面的超卖例子仍可能留下库存 0 和两笔订单。因此，一个字段合法不代表整个业务状态正确。
+### Read Uncommitted
+The minimum guarantees associated with this level allow reading another transaction's uncommitted changes, which may later be rolled back. This is a dirty read.
 
-这里的 Consistency 是数据完整性和业务不变量，**不是副本同步，也不是分布式系统中的最终一致性。**
+PostgreSQL implements this level as Read Committed, so selecting it does not enable dirty reads.
 
-### I — Isolation：隔离性
+### Read Committed
+This is PostgreSQL's default isolation level. An ordinary query uses a statement-level snapshot: it sees data committed before that query began, as well as the transaction's own earlier changes.
 
-规定多个事务并发运行时，可以看见什么，以及允许怎样相互影响。
+For example, within one transaction:
+1. The first stock query returns 10.
+2. Another transaction changes stock to 9 and commits.
+3. A second stock query may return 9.
 
-它回答的是：**别人同时操作，会怎样影响我？**
+Reading the same row again and observing a changed value is a nonrepeatable read.
 
-隔离有不同强度，使用事务不代表默认获得最高隔离。
+Reading committed data does not make that data permanently current or guarantee that a later decision based on it remains valid.
 
-### D — Durability：持久性
+### Repeatable Read
+PostgreSQL uses a stable transaction snapshot established by the first non-transaction-control statement, not necessarily by BEGIN itself. A transaction can still see its own changes.
 
-事务确认提交后，其结果应在故障恢复后仍然保留。
+In the example above, both ordinary queries see 10 even if another transaction has committed 9.
 
-它回答的是：**确认完成后，会不会丢失？**
+PostgreSQL's Repeatable Read also prevents phantom reads: concurrent commits do not change the matching row set observed by repeated queries with the same condition. It still does not provide all Serializable guarantees.
 
-这一保证依赖正确的数据库持久化配置和可靠存储。它不代表磁盘全部损毁后仍然可恢复，也不能代替备份。
+#### Write Skew: A Stable Snapshot Does Not Guarantee Jointly Valid Decisions
+Business rule: At least one of doctors A and B must remain on call.
 
-## Isolation Levels：隔离级别
+1. A's transaction sees B on call and marks A off duty.
+2. B's transaction sees A on call and marks B off duty.
+3. The transactions modify different rows and may both commit.
+4. Nobody remains on call, violating the rule.
 
-隔离级别决定事务能看见哪些并发变化，以及数据库要防止哪些并发异常。以下实现细节以 PostgreSQL 为准。
+This is write skew. Each decision looks reasonable within its own stable view, but the combined result is invalid.
 
-### Read Uncommitted：读未提交
+### Serializable
+Successful transactions must have an overall effect equivalent to some serial ordering of those transactions.
 
-按照该级别允许的最低标准，可能读到其他事务尚未提交、以后也可能撤销的数据，即脏读。
+This does not physically limit all transaction execution to one at a time. PostgreSQL can execute transactions concurrently but may abort a transaction when conflicts make a safe outcome impossible. The application must retry the entire transaction.
 
-PostgreSQL 中，选择这个级别实际上按 Read Committed 执行，不提供这种脏读行为。
+#### Does It Solve the Last-Item Race?
+Yes, provided the read, stock check, decrement, and order insertion are all inside the same Serializable transaction, and competing operations use appropriate concurrency controls too.
 
-### Read Committed：读已提交
+One possible sequence:
+1. A and B both read stock = 1.
+2. A decrements stock, creates an order, and commits.
+3. B encounters a serialization failure and aborts.
+4. The application retries B's transaction from the beginning and reads stock = 0.
+5. B reports sold out instead of creating an order.
 
-这是 PostgreSQL 的默认隔离级别。普通查询使用语句级快照，看到该查询开始前已经提交的数据，也能看见自己事务之前的修改。
+**Serializable does not necessarily prevent both transactions from initially reading 1. It prevents both purchases from committing unchanged when their combined outcome could not arise from a valid serial execution.**
 
-例如，在同一个事务里：
+#### Retry Boundaries
+- Retry the entire transaction, including its reads and business decisions, not only the last failed SQL statement.
+- Do not check stock outside the transaction and carry that stale decision into it.
+- Bound retries and handle eventual failure; do not retry forever or pretend the operation succeeded.
+- Do not repeat external charges, emails, or other side effects without appropriate safeguards.
+- Serializable does not correct a transaction's own faulty logic, such as debiting 20 and crediting 30.
 
-1. 第一次查询库存，得到 10。
-2. 另一个事务把库存改成 9，并提交。
-3. 第二次查询可能得到 9。
-
-同一行重复读取发生变化，叫不可重复读。
-
-“读取的是已提交数据”不代表这个数据一直有效，也不保证根据旧读取结果作出的决定仍然正确。
-
-### Repeatable Read：可重复读
-
-PostgreSQL 的事务使用一份稳定快照；快照建立于事务内第一条非事务控制语句，而不一定是 BEGIN 时。事务仍能看见自己的修改。
-
-在上面的例子中，两次普通查询都会读到 10，即使另一个事务已经提交了 9。
-
-PostgreSQL 的 Repeatable Read 还可以防止幻读，即同一查询条件的匹配行集合在重复查询时受其他事务提交影响而变化。但它仍不等于 Serializable。
-
-#### 写偏斜：稳定快照不保证联合决策合理
-
-规则：医生 A、B 至少一人值班。
-
-1. A 的事务看到 B 在值班，把 A 改成休息。
-2. B 的事务看到 A 在值班，把 B 改成休息。
-3. 两个事务修改不同的行，都可能提交。
-4. 最后无人值班，违反规则。
-
-这是一种写偏斜。每个事务基于自己的稳定视图作出的决定看起来合理，合在一起却不合法。
-
-### Serializable：可串行化
-
-要求成功提交的事务的整体效果，等价于按某个顺序逐个执行这些事务。
-
-它不是物理上让所有事务一次只能运行一个。PostgreSQL 可以并发执行，但发现冲突时可能中止事务，应用必须重新执行整个事务。
-
-#### 能否解决抢最后一件商品的问题？
-
-可以，前提是“读库存 → 判断 → 扣库存 → 创建订单”完整地位于同一个 Serializable 事务中，相关并发操作也采用适当的控制方式。
-
-可能发生的过程：
-
-1. A、B 都读取到库存 1。
-2. A 完成扣库存与建订单，提交。
-3. B 遇到序列化失败，被中止。
-4. 应用从头重试 B 的事务，重新读取到库存 0。
-5. B 返回售罄，不再创建订单。
-
-**Serializable 不一定阻止两个事务都先读到 1；它阻止两个不符合串行执行结果的购买事务都照原样成功提交。**
-
-#### 重试注意事项
-
-- 重试整个事务，包括查询和业务判断，不只是最后一条失败 SQL。
-- 不要把库存检查放在事务外，再把旧判断带入事务。
-- 使用有界重试并处理最终失败，不要无限重试或假装成功。
-- 不要无保护地重复外部扣款、邮件等副作用。
-- Serializable 不能修复单个事务自身的错误逻辑，例如转账减 20 加 30。
-
-
-## 稳定快照的报表示例
+## Example
 For a report that must keep a stable snapshot across multiple queries:
 
 ```sql
@@ -182,13 +160,13 @@ COMMIT;
 - Snapshot stability alone does not enforce every cross-row business invariant.
 - Keep transactions short and avoid waiting for user input while holding them open.
 - Retry the entire transaction after a serialization failure, with bounded retries and safe handling of external side effects.
-- PostgreSQL Repeatable Read 也可能发生序列化失败，并非只有 Serializable 才需要准备重试。
+- PostgreSQL Repeatable Read can also produce serialization failures; retry handling is not exclusive to Serializable.
 
 ## Related Concepts
-- [[Race Conditions]]：固定值写回与条件更新的库存示例。
-- [[Deadlocks]]：并发事务互相持锁等待。
-- [[SQL vs Application Business Logic]]：选择数据库与应用之间的业务规则边界。
-- [[psql Workflows]]：理解交互式事务状态。
+- [[Race Conditions]]: Fixed-value writes and conditional updates in the inventory example.
+- [[Deadlocks]]: Transactions waiting for locks held by one another.
+- [[SQL vs Application Business Logic]]: Choose the boundary between database and application rules.
+- [[psql Workflows]]: Understand interactive transaction state.
 
 # References
 [[2 - Source Materials/Course/Backend Fundamentals 01 - Transactions and Concurrency|Backend Fundamentals 01 - Transactions and Concurrency]]
