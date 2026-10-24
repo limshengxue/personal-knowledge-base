@@ -16,7 +16,13 @@
 - [[Append-Only Log Storage]] and [[Hash Indexes and Log Compaction]] explain log-based key/value storage.
 - [[Event Sourcing]] and [[CQRS]] explain history-based state and separate read models.
 
+## Transactions and Concurrent Correctness
+- [[PostgreSQL Transactions and Isolation Levels]] distinguishes atomicity, business invariants, isolation, and durability.
+- [[Race Conditions]] explains stale check-then-act decisions and conditional inventory updates.
+- [[Deadlocks]] explains circular lock waits and whole-transaction retry.
+
 ## Related Topics
+- [[3 - Tags/concurrency|concurrency]]
 - [[3 - Tags/sql|sql]]
 - [[3 - Tags/olap|olap]]
 - [[3 - Tags/indexing|indexing]]
