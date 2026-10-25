@@ -163,6 +163,9 @@ COMMIT;
 - PostgreSQL Repeatable Read can also produce serialization failures; retry handling is not exclusive to Serializable.
 
 ## Related Concepts
+- [[Optimistic Locking]]: Reject updates based on stale versions.
+- [[Pessimistic Locking]]: Acquire locks before protected reads and changes within one transaction.
+- [[Connection Pooling]]: Reuse connections while preserving each transaction's connection and cleanup boundaries.
 - [[Race Conditions]]: Fixed-value writes and conditional updates in the inventory example.
 - [[Deadlocks]]: Transactions waiting for locks held by one another.
 - [[SQL vs Application Business Logic]]: Choose the boundary between database and application rules.

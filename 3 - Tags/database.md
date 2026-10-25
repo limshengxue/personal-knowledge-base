@@ -21,6 +21,14 @@
 - [[Race Conditions]] explains stale check-then-act decisions and conditional inventory updates.
 - [[Deadlocks]] explains circular lock waits and whole-transaction retry.
 
+- [[Optimistic Locking]] checks for stale versions before accepting updates.
+- [[Pessimistic Locking]] coordinates competing changes with explicit locks.
+
+## Request-Level Database Performance
+- [[Connection Pooling]] reuses connections and budgets concurrent database access.
+- [[N+1 Queries]] identifies repeated queries and compares JOINs with batch loading.
+- [[PostgreSQL Indexing Strategy]] selects access paths from workload evidence.
+
 ## Related Topics
 - [[3 - Tags/concurrency|concurrency]]
 - [[3 - Tags/sql|sql]]
