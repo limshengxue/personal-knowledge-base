@@ -57,6 +57,12 @@ Revisit indexes as workload and data distribution change.
 - [[Connection Pooling]] reuses connections but does not replace query optimization. Increase its capacity only when measured acquisition waits and database headroom justify doing so.
 - There is no universal requirement to tune JOINs, indexes, and pool size in the same order for every workload.
 
+## Related Query Diagnostics
+- [[Query Optimization]] separates repeated work, expensive statements, and waiting.
+- [[EXPLAIN ANALYZE]] explains plan estimates, actual rows, loops, and execution safety.
+- [[Foreign Key Constraints]] and [[Unique Constraints]] distinguish relationship integrity from duplicate prevention.
+- [[Table Partitioning]] can prune whole pieces while indexes locate rows within the remaining pieces.
+
 # References
 [[2 - Source Materials/Course/Backend Fundamentals 02 - Locking and Database Performance|Backend Fundamentals 02 - Locking and Database Performance]]
 - [PostgreSQL Index Introduction](https://www.postgresql.org/docs/current/indexes-intro.html)

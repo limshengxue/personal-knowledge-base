@@ -29,6 +29,20 @@
 - [[N+1 Queries]] identifies repeated queries and compares JOINs with batch loading.
 - [[PostgreSQL Indexing Strategy]] selects access paths from workload evidence.
 
+## Query Plans and Schema Integrity
+- [[Query Optimization]] reduces measured unnecessary work.
+- [[EXPLAIN ANALYZE]] compares planned and observed execution.
+- [[Foreign Key Constraints]] protects relationships.
+- [[Unique Constraints]] prevents duplicates for the intended business key.
+- [[Database Migrations]] versions and tests changes, including Alembic head reconciliation.
+- [[Zero-Downtime Migrations]] coordinates compatible rolling changes and backfills.
+
+## Copies and Data Distribution
+- [[Read Replicas]] moves suitable reads to copies.
+- [[Replication Lag]] explains stale reads and read-your-writes safeguards.
+- [[Database Sharding]] distributes subsets across nodes.
+- [[Table Partitioning]] organizes one logical table into manageable pieces.
+
 ## Related Topics
 - [[3 - Tags/concurrency|concurrency]]
 - [[3 - Tags/sql|sql]]
